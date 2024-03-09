@@ -206,13 +206,13 @@ void ratePidApply(ratePid_t *pid, float setpoint[], float gyro[], float pidSums[
     float pterm = pid->kp[axis] * error;
 
     // DONE calculate Iterm which is the integral of error times a scaler
-    pid->integral[axis] += pid->ki[axis] * gyro[axis] * DT;
+    pid->integral[axis] += pid->ki[axis] * error * DT;
 
     pid->integral[axis] = constrain(pid->integral[axis], -pid->max_iterm_windup, pid->max_iterm_windup);
     float iterm = pid->integral[axis];
 
     // DONE calculate Dterm which is the derivative of error (faster) or the negative derivative of gyro (smoother) times a scaler
-    float derivative = error-pid->previous_error_or_measurement[axis] * LOOPRATE;
+    float derivative = (error - pid->previous_error_or_measurement[axis]) * LOOPRATE;
     // only keep one previous_error_or_measurement, remove the one you are not using
     // pid->previous_error_or_measurement[axis] = gyro[axis];
     pid->previous_error_or_measurement[axis] = error;
