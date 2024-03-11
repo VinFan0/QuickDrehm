@@ -56,7 +56,7 @@ void initRcScalers(midpointRangeScaler_t rc_scalers[]) {
     0.0f); // switches and aux channels typically need no deadband
 
   midpointRangeScalerInit(
-    &rc_scalers[RC_SWA], // update aux1 rc_scaler
+    &rc_scalers[RC_MODE], // update aux1 rc_scaler
     191.0f, 1004.0f, 1792.0f, // input min, mid and max
     0.0f, 0.5, 1.0f, // output min, mid and max for switches keeping to a 0.0f to 1.0f range is normally best, for pots set it up as desired
     0.0f); // deadband

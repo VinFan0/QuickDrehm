@@ -63,7 +63,7 @@ void attitudePidApply(attitudePid_t *pid, float setpoint_angles[], float gravity
     
     // DONE calculate Dterm which is the derivative of error (faster) or the negative derivative of gyro (smoother) times a scaler
     // Calculate with Error values. DT = 1/LOOPRATE
-    float derivative = (error-pid->previous_error_or_measurement[axis])*LOOPRATE;
+    float derivative = (error - pid->previous_error_or_measurement[axis])*LOOPRATE;
     // only keep one previous_error_or_measurement, remove the one you are not using
     //pid->previous_error_or_measurement[axis] = gravity_vector[axis];
     pid->previous_error_or_measurement[axis] = error;
@@ -127,22 +127,22 @@ void ratePidInit(ratePid_t *pid) {
 #define FFTERM_SCALE (0.032029f / 1000.0f)
 
   // Roll PID's
-  pid->kp[AXIS_ROLL] = PTERM_SCALE * 10.0f;
-  pid->ki[AXIS_ROLL] = ITERM_SCALE * 10.0f;
-  pid->kd[AXIS_ROLL] = DTERM_SCALE * 10.0f;
+  pid->kp[AXIS_ROLL] = PTERM_SCALE * 50.0f;
+  pid->ki[AXIS_ROLL] = ITERM_SCALE * 40.0f;
+  pid->kd[AXIS_ROLL] = DTERM_SCALE * 40.0f;
   pid->kff[AXIS_ROLL] = FFTERM_SCALE * 0.0f;
 
   // Pitch PID's
-  pid->kp[AXIS_PITCH] = PTERM_SCALE * 10.0f;
-  pid->ki[AXIS_PITCH] = ITERM_SCALE * 10.0f;
-  pid->kd[AXIS_PITCH] = DTERM_SCALE * 10.0f;
+  pid->kp[AXIS_PITCH] = PTERM_SCALE * 80.0f;
+  pid->ki[AXIS_PITCH] = ITERM_SCALE * 50.0f;
+  pid->kd[AXIS_PITCH] = DTERM_SCALE * 50.0f;
   pid->kff[AXIS_PITCH] = FFTERM_SCALE * 0.0f;
 
   // Yaw PID's
-  pid->kp[AXIS_YAW] = PTERM_SCALE * 15.0f;
-  pid->ki[AXIS_YAW] = ITERM_SCALE * 10.0f;
-  pid->kd[AXIS_YAW] = DTERM_SCALE * 5.0f;
-  pid->kff[AXIS_YAW] = FFTERM_SCALE * 0.0f;
+  pid->kp[AXIS_YAW] = PTERM_SCALE * 90.0f;
+  pid->ki[AXIS_YAW] = ITERM_SCALE * 50.0f;
+  pid->kd[AXIS_YAW] = DTERM_SCALE * 50.0f;
+  pid->kff[AXIS_YAW] = FFTERM_SCALE * 20.0f;
 
   for (int axis = 0; axis < AXIS_COUNT; axis++) {
     pid->previous_error_or_measurement[axis] = 0.0f;
