@@ -103,7 +103,7 @@ void setup() {
 // TODO easily debug any part of your code when needed
 // Example of how to print values copy and paste this into the function loop() wherever you want debugging
 /*
-  bool should_print = shouldPrint(current_time, 10.0f); // Print data at 10hz
+  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
     printDebug("gyro roll", raw_gyro[AXIS_ROLL]);
     printDebug(", pitch", raw_gyro[AXIS_PITCH]);
@@ -192,7 +192,7 @@ void loop() {
   float setpoints_rpy[AXIS_COUNT]; // these are the desired attitudes or rotation
 
   // TODO add extra modes for fixedwing flight modes with different setpoints
-  if (rc_channels[RC_AUX1] > 0.55) { // lets call aux1 attitude mode for now, you should rename it later
+  if (rc_channels[RC_MODE] > 0.55) { // lets call aux1 attitude mode for now, you should rename it later
     // These setpoints are in deg, in other words what attitude you want to be at, except for yaw which is in deg/s
     // keep the max attitude below about 60
 
@@ -228,7 +228,7 @@ void loop() {
 
     // put your fixed wing into attitude mode and slowly turn it to the right while failsafed
     // really only works for fixed wing aircraft
-    rc_channels[RC_AUX1] = 1.0f; // set the aircraft to attitude mode
+    rc_channels[RC_MODE] = 1.0f; // set the aircraft to attitude mode
     setpoints_rpy[AXIS_ROLL] = 25.0; // tilt right slightly to help turn
     setpoints_rpy[AXIS_PITCH] = 5.0; // pitch down to help keep some airspeed and prevent stalling
 
@@ -272,7 +272,7 @@ void loop() {
   );
 */
   float pidSums[AXIS_COUNT] = {0.0f, 0.0f, 0.0f}; // will be used in the mixer
-  if (rc_channels[RC_AUX1] > 0.55) { // lets call aux1 attitude mode for now, you should rename it later
+  if (rc_channels[RC_MODE] > 0.55) { // If MODE high, ATTITUDE. Else RATE
 
     // will modify setpoints_rpy to be used as the setpoint input to ratePidApply
     attitudePidApply(
@@ -357,6 +357,28 @@ void loop() {
 
   rpmFilterUpdate(&gyroFilters.rpmFilter, motor_rpms, new_rpm, DT); // Update the RPM filter using the newest RPM measured
 
+  // PUT DEBUG HERE
+  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
+  if (should_print) {
+    printDebug("pSums ROLL ", pidSums[AXIS_ROLL]);
+    printDebug(" PITCH ", pidSums[AXIS_PITCH]);
+    printDebug(" YAW ", pidSums[AXIS_YAW]);
+    printNewLine();
+
+    printDebug("MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
+    printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
+    printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
+    printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
+    printNewLine();
+    
+    // printDebug("Setpoints ROLL ", pidSums[AXIS_ROLL]);
+    // printDebug(" PITCH ", pidSums[AXIS_PITCH]);
+    // printDebug(" YAW ", pidSums[AXIS_YAW]);
+    // printNewLine();
+
+    printNewLine();
+  }
+
   // Regulate loop rate
   maxLoopRate(LOOPRATE); // Will not exceed LOOPRATE
 }
@@ -380,24 +402,42 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   // Positive pitch = pitch down
   // Positive yaw = yaw left
 
+  float pitch_command = pidSums[AXIS_PITCH];
+  float roll_command = pidSums[AXIS_ROLL];
+  float yaw_command = pidSums[AXIS_YAW];
+
   // TODO mix inputs to motor commands
   // motor commands should be between 0 and 1
-  motor_commands[MOTOR_0] = 0.0f;
-  motor_commands[MOTOR_1] = 0.0f;
-  motor_commands[MOTOR_2] = 0.0f;
-  motor_commands[MOTOR_3] = 0.0f;
+  motor_commands[MOTOR_REAR_LEFT]   = throttle + pitch_command + roll_command - yaw_command;
+  motor_commands[MOTOR_FRONT_RIGHT] = throttle - pitch_command - roll_command - yaw_command;
+  motor_commands[MOTOR_FRONT_LEFT]  = throttle - pitch_command + roll_command + yaw_command;
+  motor_commands[MOTOR_REAR_RIGHT]  = throttle + pitch_command - roll_command + yaw_command;
   
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier
-  servo_commands[SERVO_0] = 0.0f;
-  servo_commands[SERVO_1] = 0.0f;
-  servo_commands[SERVO_2] = 0.0f;
-  servo_commands[SERVO_3] = 0.0f;
-  servo_commands[SERVO_4] = 0.0f;
-  servo_commands[SERVO_5] = 0.0f;
-  servo_commands[SERVO_6] = 0.0f;
-  servo_commands[SERVO_7] = 0.0f;
-  servo_commands[SERVO_8] = 0.0f;
+  if(rc_channels[RC_SWD] == 1.0f) {
+    servo_commands[SERVO_RIGHT_REAR_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    servo_commands[SERVO_LEFT_REAR_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    servo_commands[SERVO_RIGHT_FRONT_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    servo_commands[SERVO_LEFT_FRONT_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    servo_commands[SERVO_4] = 0.0f;
+    servo_commands[SERVO_5] = 0.0f;
+    servo_commands[SERVO_6] = 0.0f;
+    servo_commands[SERVO_7] = 0.0f;
+    servo_commands[SERVO_8] = 0.0f;
+  }
+  else {
+    servo_commands[SERVO_RIGHT_REAR_AILERON]  = 0.0f;
+    servo_commands[SERVO_LEFT_REAR_AILERON]   = 0.0f;
+    servo_commands[SERVO_RIGHT_FRONT_AILERON] = 0.0f;
+    servo_commands[SERVO_LEFT_FRONT_AILERON]  = 0.0f;
+    servo_commands[SERVO_4] = 0.0f;
+    servo_commands[SERVO_5] = 0.0f;
+    servo_commands[SERVO_6] = 0.0f;
+    servo_commands[SERVO_7] = 0.0f;
+    servo_commands[SERVO_8] = 0.0f;
+  }
+  
 }
 
 // DESCRIPTION: Arming occurs when arm switch is switched from low to high twice in the span of a second.

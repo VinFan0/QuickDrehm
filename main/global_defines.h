@@ -49,8 +49,8 @@
 #define RC_ARM 4 // if using ELRS this channel should always be your arming channel
 
 // TODO rename to match aux channels function if desired
-#define RC_AUX1 5 // rename if you want channels to have mode names
-#define RC_AUX2 6 // rename if you want channels to have mode names
+#define RC_MODE 5 // rename if you want channels to have mode names
+#define RC_SWD 6 // rename if you want channels to have mode names
 #define RC_AUX3 7 // rename if you want channels to have mode names
 #define RC_AUX4 8 // rename if you want channels to have mode names
 #define RC_AUX5 9 // rename if you want channels to have mode names
@@ -71,15 +71,16 @@ typedef enum {
 axisRotation imuRotation[AXIS_COUNT] = {ROT_0_DEG, ROT_0_DEG, ROT_0_DEG}; // roll, pitch, yaw rotation
 
 // TODO Run the function calculateGyroBias() in setup() to find these values.
-float gyro_bias[AXIS_COUNT] = {
-  0.0f, // roll
-  0.0f, // pitch
-  0.0f, // yaw
-};
 float acc_bias[AXIS_COUNT] = {
-  0.0f, // x
-  0.0f, // y
-  0.0f, // z
+  0.03814f, // x
+  -0.00322f, // y
+  0.07009f, // z
+};
+
+float gyro_bias[AXIS_COUNT] = {
+  -7.67528f, // roll
+  1.19971f, // pitch
+  -1.06738f, // yaw
 };
 
 
@@ -90,13 +91,13 @@ float acc_bias[AXIS_COUNT] = {
 
 // TODO rename to match servo function, IE SERVO_FRONT_LEFT
 // pin 0
-#define SERVO_0 0 // rename to match what the servo does
+#define SERVO_RIGHT_REAR_AILERON 0 // rename to match what the servo does
 // pin 1
-#define SERVO_1 1 // rename to match what the servo does
+#define SERVO_LEFT_REAR_AILERON 1 // rename to match what the servo does
 // pin 5
-#define SERVO_2 2 // rename to match what the servo does
+#define SERVO_RIGHT_FRONT_AILERON 2 // rename to match what the servo does
 // pin 6
-#define SERVO_3 3 // rename to match what the servo does
+#define SERVO_LEFT_FRONT_AILERON 3 // rename to match what the servo does
 // pin 10
 #define SERVO_4 4 // rename to match what the servo does
 // pin 11
@@ -116,10 +117,10 @@ float acc_bias[AXIS_COUNT] = {
 #define POLE_COUNT 12 // the number of magnets in the motor, must be accurate to get accurate RPM data
 
 // TODO rename to match motor function, IE MOTOR_FRONT_LEFT
-#define MOTOR_0 0 // rename to match where the motor is or its function
-#define MOTOR_1 1 // rename to match where the motor is or its function
-#define MOTOR_2 2 // rename to match where the motor is or its function
-#define MOTOR_3 3 // rename to match where the motor is or its function
+#define MOTOR_REAR_LEFT 0 // rename to match where the motor is or its function
+#define MOTOR_FRONT_RIGHT 1 // rename to match where the motor is or its function
+#define MOTOR_FRONT_LEFT 2 // rename to match where the motor is or its function
+#define MOTOR_REAR_RIGHT 3 // rename to match where the motor is or its function
 #define MOTOR_4 4 // rename to match where the motor is or its function
 #define MOTOR_5 5 // rename to match where the motor is or its function
 
