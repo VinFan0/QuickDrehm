@@ -371,6 +371,13 @@ void loop() {
     printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
     printNewLine();
     
+
+    printDebug("RC's FLeft ", rc_channels[MOTOR_FRONT_LEFT]);
+    printDebug(" FRight ", rc_channels[MOTOR_FRONT_RIGHT]);
+    printDebug(" RLeft ", rc_channels[MOTOR_REAR_LEFT]);
+    printDebug(" RRight ", rc_channels[MOTOR_REAR_RIGHT]);
+    printNewLine();
+
     // printDebug("Setpoints ROLL ", pidSums[AXIS_ROLL]);
     // printDebug(" PITCH ", pidSums[AXIS_PITCH]);
     // printDebug(" YAW ", pidSums[AXIS_YAW]);
@@ -415,7 +422,7 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier
-  if(rc_channels[RC_SWD] == 1.0f) {
+  if(/*[RC_SWD] == 1.0f*/1) {
     servo_commands[SERVO_RIGHT_REAR_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
     servo_commands[SERVO_LEFT_REAR_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
     servo_commands[SERVO_RIGHT_FRONT_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)

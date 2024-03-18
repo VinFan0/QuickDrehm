@@ -127,7 +127,7 @@ void ratePidInit(ratePid_t *pid) {
 #define FFTERM_SCALE (0.032029f / 1000.0f)
 
   // Roll PID's
-  pid->kp[AXIS_ROLL] = PTERM_SCALE * 50.0f;
+  pid->kp[AXIS_ROLL] = PTERM_SCALE * 70.0f;
   pid->ki[AXIS_ROLL] = ITERM_SCALE * 40.0f;
   pid->kd[AXIS_ROLL] = DTERM_SCALE * 40.0f;
   pid->kff[AXIS_ROLL] = FFTERM_SCALE * 0.0f;
