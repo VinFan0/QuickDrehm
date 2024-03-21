@@ -357,35 +357,6 @@ void loop() {
 
   rpmFilterUpdate(&gyroFilters.rpmFilter, motor_rpms, new_rpm, DT); // Update the RPM filter using the newest RPM measured
 
-  // PUT DEBUG HERE
-  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
-  if (should_print) {
-    printDebug("pSums ROLL ", pidSums[AXIS_ROLL]);
-    printDebug(" PITCH ", pidSums[AXIS_PITCH]);
-    printDebug(" YAW ", pidSums[AXIS_YAW]);
-    printNewLine();
-
-    printDebug("MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
-    printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
-    printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
-    printNewLine();
-    
-
-    printDebug("RC's FLeft ", rc_channels[MOTOR_FRONT_LEFT]);
-    printDebug(" FRight ", rc_channels[MOTOR_FRONT_RIGHT]);
-    printDebug(" RLeft ", rc_channels[MOTOR_REAR_LEFT]);
-    printDebug(" RRight ", rc_channels[MOTOR_REAR_RIGHT]);
-    printNewLine();
-
-    // printDebug("Setpoints ROLL ", pidSums[AXIS_ROLL]);
-    // printDebug(" PITCH ", pidSums[AXIS_PITCH]);
-    // printDebug(" YAW ", pidSums[AXIS_YAW]);
-    // printNewLine();
-
-    printNewLine();
-  }
-
   // Regulate loop rate
   maxLoopRate(LOOPRATE); // Will not exceed LOOPRATE
 }
@@ -413,13 +384,6 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   float roll_command = pidSums[AXIS_ROLL];
   float yaw_command = pidSums[AXIS_YAW];
 
-  // TODO mix inputs to motor commands
-  // motor commands should be between 0 and 1
-  motor_commands[MOTOR_REAR_LEFT]   = throttle + pitch_command + roll_command - yaw_command;
-  motor_commands[MOTOR_FRONT_RIGHT] = throttle - pitch_command - roll_command - yaw_command;
-  motor_commands[MOTOR_FRONT_LEFT]  = throttle - pitch_command + roll_command + yaw_command;
-  motor_commands[MOTOR_REAR_RIGHT]  = throttle + pitch_command - roll_command + yaw_command;
-  
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier
   if(/*[RC_SWD] == 1.0f*/1) {
@@ -444,6 +408,31 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     servo_commands[SERVO_7] = 0.0f;
     servo_commands[SERVO_8] = 0.0f;
   }
+
+  // TODO mix inputs to motor commands
+  // Control to reduce roll when yaw given
+  float left_sin_angle = abs(sin(servo_commands[SERVO_LEFT_REAR_AILERON] * DEG2RAD));
+  float right_sin_angle = abs(sin(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD));
+  
+  // PUT DEBUG HERE
+  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
+  if (should_print) {
+    printDebug("servo commands FLeft", servo_commands[SERVO_LEFT_FRONT_AILERON]);
+    printDebug(" FRight", servo_commands[SERVO_RIGHT_FRONT_AILERON]);
+    printDebug(" RLeft", servo_commands[SERVO_LEFT_REAR_AILERON]);
+    printDebug(" RRight", servo_commands[SERVO_RIGHT_REAR_AILERON]);
+    printNewLine();
+
+    printDebug(" sin values Left", left_sin_angle);
+    printDebug(" Right", right_sin_angle);
+    printNewLine();
+  }
+  
+  // motor commands should be between 0 and 1
+  motor_commands[MOTOR_REAR_LEFT]   = (throttle + pitch_command + roll_command)/left_sin_angle - yaw_command*left_sin_angle;
+  motor_commands[MOTOR_FRONT_RIGHT] = (throttle - pitch_command - roll_command)/right_sin_angle - yaw_command*right_sin_angle;
+  motor_commands[MOTOR_FRONT_LEFT]  = (throttle - pitch_command + roll_command)/left_sin_angle + yaw_command*left_sin_angle;
+  motor_commands[MOTOR_REAR_RIGHT]  = (throttle + pitch_command - roll_command)/right_sin_angle + yaw_command*right_sin_angle;
   
 }
 
