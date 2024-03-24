@@ -29,7 +29,7 @@
 #define AXIS_PITCH 1
 #define AXIS_YAW 2
 
-#define DEG2RAD (2.0f * M_PI / 180.0f)
+#define DEG2RAD (M_PI / 180.0f)
 
 //========================================================================================================================//
 //                                                 HARDWARE SETUP DEFINES                                                 //

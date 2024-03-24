@@ -425,6 +425,7 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
 
     printDebug(" sin values Left", left_sin_angle);
     printDebug(" Right", right_sin_angle);
+    // printDebug(" RightTEST", sin(abs(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD)));
     printNewLine();
   }
   
