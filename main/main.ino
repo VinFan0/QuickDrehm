@@ -414,13 +414,22 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   float left_sin_angle = abs(sin(servo_commands[SERVO_LEFT_REAR_AILERON] * DEG2RAD));
   float right_sin_angle = abs(sin(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD));
   
+  // motor commands should be between 0 and 1
+  motor_commands[MOTOR_REAR_LEFT]   = (throttle + pitch_command + roll_command)/left_sin_angle - yaw_command*left_sin_angle*0.3;
+  motor_commands[MOTOR_FRONT_RIGHT] = (throttle - pitch_command - roll_command)/right_sin_angle - yaw_command*right_sin_angle*0.3;
+  motor_commands[MOTOR_FRONT_LEFT]  = (throttle - pitch_command + roll_command)/left_sin_angle + yaw_command*left_sin_angle*0.3;
+  motor_commands[MOTOR_REAR_RIGHT]  = (throttle + pitch_command - roll_command)/right_sin_angle + yaw_command*right_sin_angle*0.3;
+  
   // PUT DEBUG HERE
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
-    printDebug("servo commands FLeft", servo_commands[SERVO_LEFT_FRONT_AILERON]);
-    printDebug(" FRight", servo_commands[SERVO_RIGHT_FRONT_AILERON]);
-    printDebug(" RLeft", servo_commands[SERVO_LEFT_REAR_AILERON]);
-    printDebug(" RRight", servo_commands[SERVO_RIGHT_REAR_AILERON]);
+    printDebug("motor commands FLeft", motor_commands[MOTOR_FRONT_LEFT]);
+    printDebug(" FRight", motor_commands[MOTOR_FRONT_RIGHT]);
+    printDebug(" RLeft", motor_commands[MOTOR_REAR_LEFT]);
+    printDebug(" RRight", motor_commands[MOTOR_REAR_RIGHT]);
+    printNewLine();
+
+    printDebug("yaw_cmd", yaw_command);
     printNewLine();
 
     printDebug(" sin values Left", left_sin_angle);
@@ -428,13 +437,6 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     // printDebug(" RightTEST", sin(abs(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD)));
     printNewLine();
   }
-  
-  // motor commands should be between 0 and 1
-  motor_commands[MOTOR_REAR_LEFT]   = (throttle + pitch_command + roll_command)/left_sin_angle - yaw_command*left_sin_angle;
-  motor_commands[MOTOR_FRONT_RIGHT] = (throttle - pitch_command - roll_command)/right_sin_angle - yaw_command*right_sin_angle;
-  motor_commands[MOTOR_FRONT_LEFT]  = (throttle - pitch_command + roll_command)/left_sin_angle + yaw_command*left_sin_angle;
-  motor_commands[MOTOR_REAR_RIGHT]  = (throttle + pitch_command - roll_command)/right_sin_angle + yaw_command*right_sin_angle;
-  
 }
 
 // DESCRIPTION: Arming occurs when arm switch is switched from low to high twice in the span of a second.
