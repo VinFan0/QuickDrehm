@@ -41,6 +41,8 @@ ratePid_t ratePid;
 gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
+slewFilter_t transitionSlew;
+
 
 // All the code that is only run once
 void setup() {
@@ -48,6 +50,9 @@ void setup() {
   delay(500);
   
   initMotors();
+
+  // Initialize the transitionSlew
+  slewFilterInit(&transitionSlew, 1.0f, DT); // the 1.0f is how much change the slew allows in one second
 
   // Initilize the rcScalers
   initRcScalers(rcScalers);
@@ -81,8 +86,8 @@ void setup() {
   // Initialize radio communication
   radioSetup();
 
-  // delay(1000); // Add extra delay so that we can get a radio connection first. Increase value if things aren't working.
-  // findRcChannelLimits(RC_ARM); // RC limits printed to serial monitor. Paste these in radio.ino, then comment this out forever.
+  //  delay(1000); // Add extra delay so that we can get a radio connection first. Increase value if things aren't working.
+  //  findRcChannelLimits(RC_ARM); // RC limits printed to serial monitor. Paste these in radio.ino, then comment this out forever.
 
   // Initialize IMU communication
   IMUinit();
@@ -186,6 +191,8 @@ void loop() {
   // will only filter the first 4 channels and not switch channels
   rcFiltersApply(&rcFilters, rc_channels);
 
+  slewFilterApply(&transitionSlew, rc_channels[RC_SWB]);
+
 //===============================================CREATE SETPOINTS FOR PID CONTROLLER===================================================//
 
   // TODO finish this
@@ -239,22 +246,22 @@ void loop() {
 //=========================================================PID CONTROLLERS=========================================================//
 
 // TODO enable and finish the below code when getting ready for transition flights
-/*
+
   // update pid values based on flight mode
-  float roll_kp = ???;
-  float roll_ki = ???;
-  float roll_kd = ???;
-  float roll_kff = ???;
+  float roll_kp = applyTransition(70.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_ki = applyTransition(40.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kd = applyTransition(40.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kff = applyTransition(0.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
 
-  float pitch_kp = ???;
-  float pitch_ki = ???;
-  float pitch_kd = ???;
-  float pitch_kff = ???;
+  float pitch_kp = applyTransition(80.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_ki = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kd = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kff = applyTransition(0.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
 
-  float yaw_kp = ???;
-  float yaw_ki = ???;
-  float yaw_kd = ???;
-  float yaw_kff = ???;
+  float yaw_kp = applyTransition(90.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_ki = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_kd = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_kff = applyTransition(20.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
   updatePids(
     &ratePid,
     roll_kp,
@@ -270,7 +277,7 @@ void loop() {
     yaw_kd,
     yaw_kff
   );
-*/
+
   float pidSums[AXIS_COUNT] = {0.0f, 0.0f, 0.0f}; // will be used in the mixer
   if (rc_channels[RC_MODE] > 0.55) { // If MODE high, ATTITUDE. Else RATE
 
@@ -357,6 +364,12 @@ void loop() {
 
   rpmFilterUpdate(&gyroFilters.rpmFilter, motor_rpms, new_rpm, DT); // Update the RPM filter using the newest RPM measured
 
+  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
+  if (should_print) {
+    printDebug("Switch B", rc_channels[RC_SWB]);
+    printNewLine();
+  }
+
   // Regulate loop rate
   maxLoopRate(LOOPRATE); // Will not exceed LOOPRATE
 }
@@ -366,6 +379,11 @@ void loop() {
 //                                                      FUNCTIONS                                                         //                           
 //========================================================================================================================//
 
+// first value is the multirotor value, second is the fixed wing value
+float applyTransition(float multirotor_value, float fixed_wing_value) {
+    float transition = transitionSlew.state;
+    return fixed_wing_value * transition + (1.0f - transition) * multirotor_value;
+}
 
   // DESCRIPTION: Mixes scaled commands from PID controller to actuator outputs based on vehicle configuration
   /*
@@ -413,7 +431,7 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   // Control to reduce roll when yaw given
   float left_sin_angle = abs(sin(servo_commands[SERVO_LEFT_REAR_AILERON] * DEG2RAD));
   float right_sin_angle = abs(sin(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD));
-  
+  /*
   // PUT DEBUG HERE
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
@@ -428,7 +446,7 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     // printDebug(" RightTEST", sin(abs(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD)));
     printNewLine();
   }
-  
+  */
   // motor commands should be between 0 and 1
   motor_commands[MOTOR_REAR_LEFT]   = (throttle + pitch_command + roll_command)/left_sin_angle - yaw_command*left_sin_angle;
   motor_commands[MOTOR_FRONT_RIGHT] = (throttle - pitch_command - roll_command)/right_sin_angle - yaw_command*right_sin_angle;
