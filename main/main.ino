@@ -42,6 +42,10 @@ gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
 slewFilter_t transitionSlew;
+float pitch_command;
+float roll_command;
+float yaw_command;
+
 
 
 // All the code that is only run once
@@ -248,20 +252,20 @@ void loop() {
 // TODO enable and finish the below code when getting ready for transition flights
 
   // update pid values based on flight mode
-  float roll_kp = applyTransition(70.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float roll_ki = applyTransition(40.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float roll_kd = applyTransition(40.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float roll_kff = applyTransition(0.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kp = applyTransition(70.0f, 25.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_ki = applyTransition(40.0f, 15.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kd = applyTransition(40.0f, 5.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kff = applyTransition(0.0f, 20.0f); // First number is the multirotor value, second value is the fixed wing value
 
-  float pitch_kp = applyTransition(80.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float pitch_ki = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float pitch_kd = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float pitch_kff = applyTransition(0.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kp = applyTransition(80.0f, 30.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_ki = applyTransition(50.0f, 15.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kd = applyTransition(50.0f, 5.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kff = applyTransition(0.0f, 20.0f); // First number is the multirotor value, second value is the fixed wing value
 
-  float yaw_kp = applyTransition(90.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float yaw_ki = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float yaw_kd = applyTransition(50.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
-  float yaw_kff = applyTransition(20.0f, 100.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_kp = applyTransition(90.0f, 30.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_ki = applyTransition(50.0f, 20.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_kd = applyTransition(50.0f, 5.0f); // First number is the multirotor value, second value is the fixed wing value
+  float yaw_kff = applyTransition(20.0f, 50.0f); // First number is the multirotor value, second value is the fixed wing value
   updatePids(
     &ratePid,
     roll_kp,
@@ -366,7 +370,11 @@ void loop() {
 
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
-    printDebug("Switch B", rc_channels[RC_SWB]);
+    printDebug("Switch B\t", rc_channels[RC_SWB]);
+    printDebug("\tm_comm RRIGHT\t", motor_commands[MOTOR_REAR_RIGHT]);
+    printDebug("\tRLEFT\t", motor_commands[MOTOR_REAR_LEFT]);
+    printDebug("\tFRIGHT\t", motor_commands[MOTOR_FRONT_RIGHT]);
+    printDebug("\tFLEFT\t", motor_commands[MOTOR_FRONT_LEFT]);
     printNewLine();
   }
 
@@ -398,61 +406,52 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   // Positive pitch = pitch down
   // Positive yaw = yaw left
 
-  float pitch_command = pidSums[AXIS_PITCH];
-  float roll_command = pidSums[AXIS_ROLL];
-  float yaw_command = pidSums[AXIS_YAW];
+  pitch_command = pidSums[AXIS_PITCH];
+  roll_command = pidSums[AXIS_ROLL];
+  yaw_command = pidSums[AXIS_YAW];
 
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier
-  if(/*[RC_SWD] == 1.0f*/1) {
-    servo_commands[SERVO_RIGHT_REAR_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_LEFT_REAR_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_RIGHT_FRONT_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_LEFT_FRONT_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_4] = 0.0f;
-    servo_commands[SERVO_5] = 0.0f;
-    servo_commands[SERVO_6] = 0.0f;
-    servo_commands[SERVO_7] = 0.0f;
-    servo_commands[SERVO_8] = 0.0f;
-  }
-  else {
-    servo_commands[SERVO_RIGHT_REAR_AILERON]  = 0.0f;
-    servo_commands[SERVO_LEFT_REAR_AILERON]   = 0.0f;
-    servo_commands[SERVO_RIGHT_FRONT_AILERON] = 0.0f;
-    servo_commands[SERVO_LEFT_FRONT_AILERON]  = 0.0f;
-    servo_commands[SERVO_4] = 0.0f;
-    servo_commands[SERVO_5] = 0.0f;
-    servo_commands[SERVO_6] = 0.0f;
-    servo_commands[SERVO_7] = 0.0f;
-    servo_commands[SERVO_8] = 0.0f;
-  }
+  float multiRearRightServo = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+  float multiRearLeftServo = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+  float multiFrontRightServo = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+  float multiFrontLeftServo = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+
+  float fixedRearRightServo  = (roll_command - pitch_command)*90.0f;
+  float fixedRearLeftServo   = (-roll_command - pitch_command)*90.0f;
+  float fixedFrontRightServo = (roll_command +  pitch_command)*90.0f;
+  float fixedFrontLeftServo  = (-roll_command + pitch_command)*90.0f;
+   
+  servo_commands[SERVO_REAR_RIGHT]  = applyTransition(multiRearRightServo, fixedRearRightServo);
+  servo_commands[SERVO_REAR_LEFT]   = applyTransition(multiRearLeftServo, fixedRearLeftServo);
+  servo_commands[SERVO_FRONT_RIGHT] = applyTransition(multiFrontRightServo, fixedFrontRightServo);
+  servo_commands[SERVO_FRONT_LEFT]  = applyTransition(multiFrontLeftServo, fixedFrontLeftServo);
+  //servo_commands[SERVO_8] = 0.0f;
+
 
   // TODO mix inputs to motor commands
   // Control to reduce roll when yaw given
-  float left_sin_angle = abs(sin(servo_commands[SERVO_LEFT_REAR_AILERON] * DEG2RAD));
-  float right_sin_angle = abs(sin(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD));
-  /*
-  // PUT DEBUG HERE
-  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
-  if (should_print) {
-    printDebug("servo commands FLeft", servo_commands[SERVO_LEFT_FRONT_AILERON]);
-    printDebug(" FRight", servo_commands[SERVO_RIGHT_FRONT_AILERON]);
-    printDebug(" RLeft", servo_commands[SERVO_LEFT_REAR_AILERON]);
-    printDebug(" RRight", servo_commands[SERVO_RIGHT_REAR_AILERON]);
-    printNewLine();
-
-    printDebug(" sin values Left", left_sin_angle);
-    printDebug(" Right", right_sin_angle);
-    // printDebug(" RightTEST", sin(abs(servo_commands[SERVO_RIGHT_REAR_AILERON] * DEG2RAD)));
-    printNewLine();
-  }
-  */
-  // motor commands should be between 0 and 1
-  motor_commands[MOTOR_REAR_LEFT]   = (throttle + pitch_command + roll_command)/left_sin_angle - yaw_command*left_sin_angle;
-  motor_commands[MOTOR_FRONT_RIGHT] = (throttle - pitch_command - roll_command)/right_sin_angle - yaw_command*right_sin_angle;
-  motor_commands[MOTOR_FRONT_LEFT]  = (throttle - pitch_command + roll_command)/left_sin_angle + yaw_command*left_sin_angle;
-  motor_commands[MOTOR_REAR_RIGHT]  = (throttle + pitch_command - roll_command)/right_sin_angle + yaw_command*right_sin_angle;
+  float left_sin_angle = abs(sin(servo_commands[SERVO_REAR_LEFT] * DEG2RAD));
+  float right_sin_angle = abs(sin(servo_commands[SERVO_REAR_RIGHT] * DEG2RAD));
   
+  // motor commands should be between 0 and 1
+  
+  
+  float multiRearRightMotor = (throttle + pitch_command - roll_command)/right_sin_angle + yaw_command*right_sin_angle;
+  float multiRearLeftMotor = (throttle + pitch_command + roll_command)/left_sin_angle - yaw_command*left_sin_angle;
+  float multiFrontRightMotor = (throttle - pitch_command - roll_command)/right_sin_angle - yaw_command*right_sin_angle;
+  float multiFrontLeftMotor = (throttle - pitch_command + roll_command)/left_sin_angle + yaw_command*left_sin_angle;
+
+  float fixedRearRightMotor  = throttle + yaw_command;
+  float fixedRearLeftMotor   = throttle - yaw_command;
+  float fixedFrontRightMotor = throttle + yaw_command;
+  float fixedFrontLeftMotor  = throttle - yaw_command;
+  
+  motor_commands[MOTOR_REAR_RIGHT] = applyTransition(multiRearRightMotor, fixedRearRightMotor);
+  motor_commands[MOTOR_REAR_LEFT] = applyTransition(multiRearLeftMotor, fixedRearLeftMotor);
+  motor_commands[MOTOR_FRONT_RIGHT] = applyTransition(multiFrontRightMotor, fixedFrontRightMotor);
+  motor_commands[MOTOR_FRONT_LEFT] = applyTransition(multiFrontLeftMotor, fixedFrontLeftMotor);
+
 }
 
 // DESCRIPTION: Arming occurs when arm switch is switched from low to high twice in the span of a second.
