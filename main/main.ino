@@ -370,11 +370,9 @@ void loop() {
 
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
-    printDebug("Switch B\t", rc_channels[RC_SWB]);
-    printDebug("\tm_comm RRIGHT\t", motor_commands[MOTOR_REAR_RIGHT]);
-    printDebug("\tRLEFT\t", motor_commands[MOTOR_REAR_LEFT]);
-    printDebug("\tFRIGHT\t", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug("\tFLEFT\t", motor_commands[MOTOR_FRONT_LEFT]);
+    printDebug("Axis commands Roll", roll_command);
+    printDebug(" Pitch", pitch_command);
+    printDebug(" Yaw", yaw_command);
     printNewLine();
   }
 
