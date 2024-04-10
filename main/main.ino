@@ -252,15 +252,15 @@ void loop() {
 // TODO enable and finish the below code when getting ready for transition flights
 
   // update pid values based on flight mode
-  float roll_kp = applyTransition(70.0f, 25.0f); // First number is the multirotor value, second value is the fixed wing value
-  float roll_ki = applyTransition(40.0f, 15.0f); // First number is the multirotor value, second value is the fixed wing value
-  float roll_kd = applyTransition(40.0f, 5.0f); // First number is the multirotor value, second value is the fixed wing value
-  float roll_kff = applyTransition(0.0f, 20.0f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kp = applyTransition(70.0f, 12.5f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_ki = applyTransition(40.0f, 7.5f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kd = applyTransition(40.0f, 2.5f); // First number is the multirotor value, second value is the fixed wing value
+  float roll_kff = applyTransition(0.0f, 10.0f); // First number is the multirotor value, second value is the fixed wing value
 
-  float pitch_kp = applyTransition(80.0f, 30.0f); // First number is the multirotor value, second value is the fixed wing value
-  float pitch_ki = applyTransition(50.0f, 15.0f); // First number is the multirotor value, second value is the fixed wing value
-  float pitch_kd = applyTransition(50.0f, 5.0f); // First number is the multirotor value, second value is the fixed wing value
-  float pitch_kff = applyTransition(0.0f, 20.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kp = applyTransition(80.0f, 15.0f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_ki = applyTransition(50.0f, 7.5f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kd = applyTransition(50.0f, 2.5f); // First number is the multirotor value, second value is the fixed wing value
+  float pitch_kff = applyTransition(0.0f, 10.0f); // First number is the multirotor value, second value is the fixed wing value
 
   float yaw_kp = applyTransition(90.0f, 30.0f); // First number is the multirotor value, second value is the fixed wing value
   float yaw_ki = applyTransition(50.0f, 20.0f); // First number is the multirotor value, second value is the fixed wing value
@@ -370,9 +370,10 @@ void loop() {
 
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
-    printDebug("Axis commands Roll", roll_command);
-    printDebug(" Pitch", pitch_command);
-    printDebug(" Yaw", yaw_command);
+    printDebug("Servos Front Left", servo_commands[SERVO_FRONT_LEFT]);
+    printDebug(" Servos Front Right", servo_commands[SERVO_FRONT_RIGHT]);
+    printDebug(" Servos Rear Left", servo_commands[SERVO_REAR_LEFT]);
+    printDebug(" Servos Rear Right", servo_commands[SERVO_REAR_RIGHT]);
     printNewLine();
   }
 
