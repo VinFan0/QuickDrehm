@@ -53,7 +53,7 @@
 // TODO rename to match aux channels function if desired
 #define RC_MODE 5 // rename if you want channels to have mode names
 #define RC_SWD 6 // rename if you want channels to have mode names
-#define RC_AUX3 7 // rename if you want channels to have mode names
+#define RC_SWB 7 // rename if you want channels to have mode names
 #define RC_AUX4 8 // rename if you want channels to have mode names
 #define RC_AUX5 9 // rename if you want channels to have mode names
 #define RC_AUX6 10 // rename if you want channels to have mode names
@@ -93,13 +93,13 @@ float gyro_bias[AXIS_COUNT] = {
 
 // TODO rename to match servo function, IE SERVO_FRONT_LEFT
 // pin 0
-#define SERVO_RIGHT_REAR_AILERON 0 // rename to match what the servo does
+#define SERVO_REAR_RIGHT 0 // rename to match what the servo does
 // pin 1
-#define SERVO_LEFT_REAR_AILERON 1 // rename to match what the servo does
+#define SERVO_REAR_LEFT 1 // rename to match what the servo does
 // pin 5
-#define SERVO_RIGHT_FRONT_AILERON 2 // rename to match what the servo does
+#define SERVO_FRONT_RIGHT 2 // rename to match what the servo does
 // pin 6
-#define SERVO_LEFT_FRONT_AILERON 3 // rename to match what the servo does
+#define SERVO_FRONT_LEFT 3 // rename to match what the servo does
 // pin 10
 #define SERVO_4 4 // rename to match what the servo does
 // pin 11
