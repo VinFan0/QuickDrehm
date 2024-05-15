@@ -41,7 +41,7 @@ ratePid_t ratePid;
 gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
-//test
+
 // All the code that is only run once
 void setup() {
   Serial.begin(500000); // USB serial
