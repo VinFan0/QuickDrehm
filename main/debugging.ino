@@ -1,5 +1,5 @@
 // Teensy Flight Controller - QuickDrehm
-// Authors: Kevin Plaizer
+// Authors: Kevin Plaizer, Ryan Beck
 // Version: Alpha 1.0
 
 //========================================================================================================================//

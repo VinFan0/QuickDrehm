@@ -1,5 +1,5 @@
 // Teensy Flight Controller - QuickDrehm
-// Authors: Kevin Plaizer, Nicholas Rehm
+// Authors: Kevin Plaizer, Nicholas Rehm, Ryan Beck
 // Version: Alpha 1.0
  
 //========================================================================================================================//
@@ -90,7 +90,7 @@ void setup() {
   delay(5);
 
   // Get IMU error to zero accelerometer and gyro readings, assuming vehicle is level when powered up
-  // calculateGyroBias(); // Calibration parameters printed to serial monitor. Paste these in the user specified variables section, then comment this out forever.
+  calculateGyroBias(); // Calibration parameters printed to serial monitor. Paste these in the user specified variables section, then comment this out forever.
 
   // Indicate entering main loop with 3 quick blinks
   setupBlink(3, 160, 70); // numBlinks, upTime (ms), downTime (ms)
@@ -358,23 +358,32 @@ void loop() {
   rpmFilterUpdate(&gyroFilters.rpmFilter, motor_rpms, new_rpm, DT); // Update the RPM filter using the newest RPM measured
 
   // PUT DEBUG HERE
-  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
-  if (should_print) {
-    printDebug("pSums ROLL ", pidSums[AXIS_ROLL]);
-    printDebug(" PITCH ", pidSums[AXIS_PITCH]);
-    printDebug(" YAW ", pidSums[AXIS_YAW]);
-    printNewLine();
+  // bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
+  // if (should_print) {
+  //   printDebug("pSums ROLL ", pidSums[AXIS_ROLL]);
+  //   printDebug(" PITCH ", pidSums[AXIS_PITCH]);
+  //   printDebug(" YAW ", pidSums[AXIS_YAW]);
+  //   printNewLine();
 
-    printDebug("MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
-    printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
-    printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
-    printNewLine();
+  //   printDebug("MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
+  //   printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
+  //   printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
+  //   printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
+  //   printNewLine();
     
     // printDebug("Setpoints ROLL ", pidSums[AXIS_ROLL]);
     // printDebug(" PITCH ", pidSums[AXIS_PITCH]);
     // printDebug(" YAW ", pidSums[AXIS_YAW]);
     // printNewLine();
+
+  bool should_print = shouldPrint(current_time, 10.0f); // Print data at 50hz
+
+  if (should_print) {
+    printDebug("attitude roll", attitude_euler[AXIS_ROLL]);
+    printDebug(", pitch", attitude_euler[AXIS_PITCH]);
+    printDebug(", yaw", attitude_euler[AXIS_YAW]);
+    printNewLine();
+  }
 
     printNewLine();
   }

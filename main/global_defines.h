@@ -1,5 +1,5 @@
 // Teensy Flight Controller - QuickDrehm
-// Authors: Kevin Plaizer
+// Authors: Kevin Plaizer, Ryan Beck
 // Version: Alpha 1.0
 
 //========================================================================================================================//
@@ -72,15 +72,15 @@ axisRotation imuRotation[AXIS_COUNT] = {ROT_0_DEG, ROT_0_DEG, ROT_0_DEG}; // rol
 
 // TODO Run the function calculateGyroBias() in setup() to find these values.
 float acc_bias[AXIS_COUNT] = {
-  0.03814f, // x
-  -0.00322f, // y
-  0.07009f, // z
+  0.05583f, // x
+  -0.00203f, // y
+  0.00672f, // z
 };
 
 float gyro_bias[AXIS_COUNT] = {
-  -7.67528f, // roll
-  1.19971f, // pitch
-  -1.06738f, // yaw
+  -1.02427f, // roll
+  -13.42177f, // pitch
+  -2.76158f, // yaw
 };
 
 
