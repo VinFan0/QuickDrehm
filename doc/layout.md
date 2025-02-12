@@ -25,14 +25,15 @@
 12. UNUSED SERVO
 
 **Right Side**
-23. Motor 4
-22. Motor 3
-21. SBUS In
-20. UNUSED
-19. IMU SCL
-18. IMU SDA
-17. Down Prox Sensor Tx
-16. Down Prox Sensor Rx
-15. Forward Prox Sensor Rx
-14. Forward Prox Sensor Tx
 13. UNUSED
+14. Forward Prox Sensor Tx
+15. Forward Prox Sensor Rx
+16. Down Prox Sensor Rx
+17. Down Prox Sensor Tx
+18. IMU SDA
+19. IMU SCL
+20. UNUSED
+21. SBUS In
+22. Motor 3
+23. Motor 4
+
