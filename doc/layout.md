@@ -1,0 +1,38 @@
+# Pin layout for FieldMarker
+## Author: Ryan Beck
+
+## Peripherals to connect:
+- 4x Motor
+- 1x Servo (PWM, Pin 0)
+- Down Prox Sensor (UART4)
+- Forward Prox Sensor (UART3?)
+- 1x GPS
+
+## Pins
+**Left Side**
+0: Servo
+1: UNUSED SERVO
+2: Motor 2
+3: UNUSED
+4: Motor 0
+5: UNUSED SERVO
+6: UNUSED SERVO
+7: UNUSED
+8: Motor 1
+9: UNUSED MOTOR
+10: UNUSED SERVO
+11: UNUSED SERVO
+12: UNUSED SERVO
+
+**Right Side**
+23: Motor 4
+22: Motor 3
+21: SBUS In
+20: UNUSED
+19: IMU SCL
+18: IMU SDA
+17: Down Prox Sensor Tx
+16: Down Prox Sensor Rx
+15: Forward Prox Sensor Rx
+14: Forward Prox Sensor Tx
+13: UNUSED
