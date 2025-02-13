@@ -416,27 +416,27 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier
-  if(rc_channels[RC_AUX2] == 1.0f) {
-    servo_commands[SERVO_RIGHT_REAR_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_LEFT_REAR_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_RIGHT_FRONT_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_LEFT_FRONT_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
-    servo_commands[SERVO_4] = 0.0f;
-    servo_commands[SERVO_5] = 0.0f;
-    servo_commands[SERVO_6] = 0.0f;
-    servo_commands[SERVO_7] = 0.0f;
-    servo_commands[SERVO_8] = 0.0f;
+  if(rc_channels[RC_SPRAYER] == 1.0f) {
+    servo_commands[SERVO_SPRAYER] = 45.0f; // constrain(input, low, high)
+    // servo_commands[SERVO_LEFT_REAR_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    // servo_commands[SERVO_RIGHT_FRONT_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    // servo_commands[SERVO_LEFT_FRONT_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
+    // servo_commands[SERVO_4] = 0.0f;
+    // servo_commands[SERVO_5] = 0.0f;
+    // servo_commands[SERVO_6] = 0.0f;
+    // servo_commands[SERVO_7] = 0.0f;
+    // servo_commands[SERVO_8] = 0.0f;
   }
   else {
-    servo_commands[SERVO_RIGHT_REAR_AILERON]  = 0.0f;
-    servo_commands[SERVO_LEFT_REAR_AILERON]   = 0.0f;
-    servo_commands[SERVO_RIGHT_FRONT_AILERON] = 0.0f;
-    servo_commands[SERVO_LEFT_FRONT_AILERON]  = 0.0f;
-    servo_commands[SERVO_4] = 0.0f;
-    servo_commands[SERVO_5] = 0.0f;
-    servo_commands[SERVO_6] = 0.0f;
-    servo_commands[SERVO_7] = 0.0f;
-    servo_commands[SERVO_8] = 0.0f;
+    servo_commands[SERVO_SPRAYER]  = -45.0f;
+    // servo_commands[SERVO_LEFT_REAR_AILERON]   = 0.0f;
+    // servo_commands[SERVO_RIGHT_FRONT_AILERON] = 0.0f;
+    // servo_commands[SERVO_LEFT_FRONT_AILERON]  = 0.0f;
+    // servo_commands[SERVO_4] = 0.0f;
+    // servo_commands[SERVO_5] = 0.0f;
+    // servo_commands[SERVO_6] = 0.0f;
+    // servo_commands[SERVO_7] = 0.0f;
+    // servo_commands[SERVO_8] = 0.0f;
   }
   
 }

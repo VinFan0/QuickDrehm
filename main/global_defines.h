@@ -50,7 +50,7 @@
 
 // TODO rename to match aux channels function if desired
 #define RC_MODE 5 // Mode Switch (manual vs autonomous)
-#define RC_AUX2 6 // rename if you want channels to have mode names
+#define RC_SPRAYER 6 // Trigger Sprayer
 #define RC_AUX3 7 // rename if you want channels to have mode names
 #define RC_AUX4 8 // rename if you want channels to have mode names
 #define RC_AUX5 9 // rename if you want channels to have mode names
@@ -87,11 +87,11 @@ float gyro_bias[AXIS_COUNT] = {
 //======================================================SERVO SETUP=======================================================//
 
 #define MAX_SERVO_COUNT 9 // don't change this
-#define SERVO_COUNT 9 // no real need to change
+#define SERVO_COUNT 1 // no real need to change
 
 // TODO rename to match servo function, IE SERVO_FRONT_LEFT
 // pin 0
-#define SERVO_RIGHT_REAR_AILERON 0 // rename to match what the servo does
+#define SERVO_SPRAYER 0 // rename to match what the servo does
 // pin 1
 #define SERVO_LEFT_REAR_AILERON 1 // rename to match what the servo does
 // pin 5
