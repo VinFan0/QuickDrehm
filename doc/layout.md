@@ -10,12 +10,12 @@
 
 ## Pins
 **Left Side**
-- 0 Servo
-- 1 UNUSED SERVO
+- 0 GPS Rx
+- 1 GPS Tx
 - 2 Motor 2
 - 3 UNUSED
 - 4 Motor 0
-- 5 UNUSED SERVO
+- 5 Sprayer Servo
 - 6 UNUSED SERVO
 - 7 UNUSED
 - 8 Motor 1
