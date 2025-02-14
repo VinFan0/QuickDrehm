@@ -87,17 +87,17 @@ float gyro_bias[AXIS_COUNT] = {
 //======================================================SERVO SETUP=======================================================//
 
 #define MAX_SERVO_COUNT 9 // don't change this
-#define SERVO_COUNT 1 // no real need to change
+#define SERVO_COUNT 9 // no real need to change
 
 // TODO rename to match servo function, IE SERVO_FRONT_LEFT
 // pin 0
-#define SERVO_SPRAYER 0 // rename to match what the servo does
+#define SERVO_0 0 // rename to match what the servo does
 // pin 1
-#define SERVO_LEFT_REAR_AILERON 1 // rename to match what the servo does
+#define SERVO_1 1 // rename to match what the servo does
 // pin 5
-#define SERVO_RIGHT_FRONT_AILERON 2 // rename to match what the servo does
+#define SERVO_SPRAYER 2 // Paint Sprayer servo on pin 5
 // pin 6
-#define SERVO_LEFT_FRONT_AILERON 3 // rename to match what the servo does
+#define SERVO_3 3 // rename to match what the servo does
 // pin 10
 #define SERVO_4 4 // rename to match what the servo does
 // pin 11
