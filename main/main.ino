@@ -272,7 +272,7 @@ void loop() {
   );
 */
   float pidSums[AXIS_COUNT] = {0.0f, 0.0f, 0.0f}; // will be used in the mixer
-  if (rc_channels[RC_MODE] > 0.55) { // If MODE high, ATTITUDE. Else RATE
+  if (rc_channels[RC_MODE] < 0.55) { // If MODE low, ATTITUDE. Else AUTO
 
     // will modify setpoints_rpy to be used as the setpoint input to ratePidApply
     attitudePidApply(
@@ -358,27 +358,27 @@ void loop() {
   rpmFilterUpdate(&gyroFilters.rpmFilter, motor_rpms, new_rpm, DT); // Update the RPM filter using the newest RPM measured
 
   // PUT DEBUG HERE
-  // bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
-  // if (should_print) {
-  // //   printDebug("pSums ROLL ", pidSums[AXIS_ROLL]);
-  // //   printDebug(" PITCH ", pidSums[AXIS_PITCH]);
-  // //   printDebug(" YAW ", pidSums[AXIS_YAW]);
-  // //   printNewLine();
+  bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
+  if (should_print) {
+    printDebug("Mode ", rc_channels[RC_MODE]);
+    // printDebug(" pSums ROLL ", pidSums[AXIS_ROLL]);
+    // printDebug("\tPITCH ", pidSums[AXIS_PITCH]);
+    // printDebug("\tYAW ", pidSums[AXIS_YAW]);
+    // printNewLine();
+    printDebug(" setpoints ROLL ", setpoints_rpy[AXIS_ROLL]);
+    printDebug("\tPITCH ", setpoints_rpy[AXIS_PITCH]);
+    printDebug("\tYAW ", setpoints_rpy[AXIS_YAW]);
+    printNewLine();
 
-  // //   printDebug("MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
-  // //   printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
-  // //   printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
-  // //   printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
-  // //   printNewLine();
+    // printDebug("Mode ", rc_channels[RC_MODE]);
+    // printDebug(" MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
+    // printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
+    // printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
+    // printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
+    // printNewLine();
+
     
-  //   // printDebug("Setpoints ROLL ", pidSums[AXIS_ROLL]);
-  //   // printDebug(" PITCH ", pidSums[AXIS_PITCH]);
-  //   // printDebug(" YAW ", pidSums[AXIS_YAW]);
-  //   // printNewLine();
-
-  //   // printDebug("Failsafe ", failsafe);
-  //   // printNewLine();
-  // }
+  }
 
   // Regulate loop rate
   maxLoopRate(LOOPRATE); // Will not exceed LOOPRATE
@@ -409,6 +409,7 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
 
   // TODO mix inputs to motor commands
   // motor commands should be between 0 and 1
+
   motor_commands[MOTOR_REAR_LEFT]   = throttle + pitch_command + roll_command - yaw_command;
   motor_commands[MOTOR_FRONT_RIGHT] = throttle - pitch_command - roll_command - yaw_command;
   motor_commands[MOTOR_FRONT_LEFT]  = throttle - pitch_command + roll_command + yaw_command;
