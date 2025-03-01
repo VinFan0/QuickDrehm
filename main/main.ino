@@ -360,24 +360,17 @@ void loop() {
   // PUT DEBUG HERE
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
-    printDebug("Mode ", rc_channels[RC_MODE]);
-    // printDebug(" pSums ROLL ", pidSums[AXIS_ROLL]);
-    // printDebug("\tPITCH ", pidSums[AXIS_PITCH]);
-    // printDebug("\tYAW ", pidSums[AXIS_YAW]);
+    // printDebug("attitude roll", attitude_euler[AXIS_ROLL]);
+    // printDebug(", pitch", attitude_euler[AXIS_PITCH]);
+    // printDebug(", yaw", attitude_euler[AXIS_YAW]);
     // printNewLine();
-    printDebug(" setpoints ROLL ", setpoints_rpy[AXIS_ROLL]);
-    printDebug("\tPITCH ", setpoints_rpy[AXIS_PITCH]);
-    printDebug("\tYAW ", setpoints_rpy[AXIS_YAW]);
+
+    printDebug("ARM ", rc_channels[RC_ARM]);
+    printDebug(" MCs \tFL", motor_commands[MOTOR_FRONT_LEFT]);
+    printDebug(" MCs \tFR", motor_commands[MOTOR_FRONT_RIGHT]);
+    printDebug(" MCs \tRR", motor_commands[MOTOR_REAR_RIGHT]);
+    printDebug(" MCs \tRL", motor_commands[MOTOR_REAR_LEFT]);
     printNewLine();
-
-    // printDebug("Mode ", rc_channels[RC_MODE]);
-    // printDebug(" MC's FLeft ", motor_commands[MOTOR_FRONT_LEFT]);
-    // printDebug(" FRight ", motor_commands[MOTOR_FRONT_RIGHT]);
-    // printDebug(" RLeft ", motor_commands[MOTOR_REAR_LEFT]);
-    // printDebug(" RRight ", motor_commands[MOTOR_REAR_RIGHT]);
-    // printNewLine();
-
-    
   }
 
   // Regulate loop rate
@@ -410,10 +403,10 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   // TODO mix inputs to motor commands
   // motor commands should be between 0 and 1
 
-  motor_commands[MOTOR_REAR_LEFT]   = throttle + pitch_command + roll_command - yaw_command;
-  motor_commands[MOTOR_FRONT_RIGHT] = throttle - pitch_command - roll_command - yaw_command;
-  motor_commands[MOTOR_FRONT_LEFT]  = throttle - pitch_command + roll_command + yaw_command;
-  motor_commands[MOTOR_REAR_RIGHT]  = throttle + pitch_command - roll_command + yaw_command;
+  motor_commands[MOTOR_REAR_LEFT]   = throttle + pitch_command + roll_command + yaw_command;
+  motor_commands[MOTOR_FRONT_RIGHT] = throttle - pitch_command - roll_command + yaw_command;
+  motor_commands[MOTOR_FRONT_LEFT]  = throttle - pitch_command + roll_command - yaw_command;
+  motor_commands[MOTOR_REAR_RIGHT]  = throttle + pitch_command - roll_command - yaw_command;
   
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier

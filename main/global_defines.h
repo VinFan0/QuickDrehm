@@ -72,16 +72,17 @@ axisRotation imuRotation[AXIS_COUNT] = {ROT_0_DEG, ROT_0_DEG, ROT_0_DEG}; // rol
 
 // TODO Run the function calculateGyroBias() in setup() to find these values.
 float acc_bias[AXIS_COUNT] = {
-  0.05583f, // x
-  -0.00203f, // y
-  0.00672f, // z
+  0.06230f, // x
+  0.00005f, // y
+  -0.02469f, // z
 };
 
 float gyro_bias[AXIS_COUNT] = {
-  -1.02427f, // roll
-  -13.42177f, // pitch
-  -2.76158f, // yaw
+  -0.62986f, // roll
+  -13.36663f, // pitch
+  -3.06599f, // yaw
 };
+
 
 
 //======================================================SERVO SETUP=======================================================//
