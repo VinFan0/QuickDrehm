@@ -365,7 +365,7 @@ void loop() {
     // printDebug(", yaw", attitude_euler[AXIS_YAW]);
     // printNewLine();
 
-    printDebug("ARM ", rc_channels[RC_ARM]);
+    printDebug("ARM ", armed);
     printDebug(" MCs \tFL", motor_commands[MOTOR_FRONT_LEFT]);
     printDebug(" MCs \tFR", motor_commands[MOTOR_FRONT_RIGHT]);
     printDebug(" MCs \tRR", motor_commands[MOTOR_REAR_RIGHT]);
