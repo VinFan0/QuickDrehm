@@ -41,6 +41,7 @@ ratePid_t ratePid;
 gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
+float altitude;
 
 // All the code that is only run once
 void setup() {
@@ -69,6 +70,9 @@ void setup() {
 
   // Initilize the rcFilters
   initRCFilters(&rcFilters);
+
+  // Initialize proximity sensor I/O
+  proxInit();
 
   // Initialize all pins
   pinMode(13, OUTPUT); // Pin 13 LED blinker on board, do not modify 
@@ -123,6 +127,8 @@ void loop() {
 
   loopBlink(current_time, 0.5f); // Indicate we are in main loop with a blink every x seconds
 
+//================================================GET PROXIMITY SENSOR DATA===============================================//
+altitude = measureAlt();
 
 //=============================================GET IMU DATA AND APPLY FILTERS=============================================//
 
@@ -365,11 +371,14 @@ void loop() {
     // printDebug(", yaw", attitude_euler[AXIS_YAW]);
     // printNewLine();
 
-    printDebug("ARM ", armed);
-    printDebug(" MCs \tFL", motor_commands[MOTOR_FRONT_LEFT]);
-    printDebug(" MCs \tFR", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug(" MCs \tRR", motor_commands[MOTOR_REAR_RIGHT]);
-    printDebug(" MCs \tRL", motor_commands[MOTOR_REAR_LEFT]);
+    // printDebug("ARM ", armed);
+    // printDebug(" MCs \tFL", motor_commands[MOTOR_FRONT_LEFT]);
+    // printDebug(" MCs \tFR", motor_commands[MOTOR_FRONT_RIGHT]);
+    // printDebug(" MCs \tRR", motor_commands[MOTOR_REAR_RIGHT]);
+    // printDebug(" MCs \tRL", motor_commands[MOTOR_REAR_LEFT]);
+    // printNewLine();
+
+    printDebug("Altitude ", altitude);
     printNewLine();
   }
 
