@@ -68,10 +68,10 @@ void initServoScales(boundedRangeScaler_t servoScales[]) {
 }
 
 void initServos(boundedRangeScaler_t servoScales[]) {
-  for (int i = 0; i < SERVO_COUNT; i++) {
+  // for (int i = 0; i < SERVO_COUNT; i++) {
     // these values should work for most servos
-    servo[i].attach(servoPins[i], 500, 2500); // Pin, min PWM value, max PWM value
-  }
+    servo[SERVO_SPRAYER].attach(servoPins[SERVO_SPRAYER], 500, 2500); // Pin, min PWM value, max PWM value
+  // }
 
   initServoScales(servoScales);
 }
@@ -85,10 +85,10 @@ void servoScalerInitHelper(boundedRangeScaler_t &servoScales, float angle_min, f
 }
 
 void sendServoCommands(boundedRangeScaler_t servoScales[], float servo_commands[]) {
-  for (int i = 0; i < SERVO_COUNT; i++) {
-    float scaled_command = boundedRangeScalerApply(servoScales[i], servo_commands[i]);
+  // for (int i = 0; i < SERVO_COUNT; i++) {
+    float scaled_command = boundedRangeScalerApply(servoScales[SERVO_SPRAYER], servo_commands[SERVO_SPRAYER]);
 
     int command = constrain(scaled_command, 0, 180);
-    servo[i].write(command); // Writes PWM value to servo object takes 0-180
-  }
+    servo[SERVO_SPRAYER].write(command); // Writes PWM value to servo object takes 0-180
+  // }
 }

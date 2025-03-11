@@ -42,6 +42,7 @@ gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
 float altitude;
+float obstacleDistance;
 
 // All the code that is only run once
 void setup() {
@@ -128,7 +129,8 @@ void loop() {
   loopBlink(current_time, 0.5f); // Indicate we are in main loop with a blink every x seconds
 
 //================================================GET PROXIMITY SENSOR DATA===============================================//
-altitude = measureAlt();
+// altitude = measureAlt();
+// obstacleDistance = measureObstacle();
 
 //=============================================GET IMU DATA AND APPLY FILTERS=============================================//
 
@@ -379,6 +381,8 @@ altitude = measureAlt();
     // printNewLine();
 
     printDebug("Altitude ", altitude);
+    printDebug(" Obstacle ", obstacleDistance);
+    printDebug(" Spray Switch ", rc_channels[RC_SPRAYER]);
     printNewLine();
   }
 

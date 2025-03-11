@@ -26,6 +26,19 @@ float measureAlt() {
   return inches;
 }
 
+float measureObstacle() {
+  float duration, inches;
+
+  digitalWrite(FRONT_TX_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(FRONT_TX_PIN, LOW);
+
+  duration = pulseIn(FRONT_RX_PIN, HIGH);
+
+  inches = microsecondsToInches(duration);
+  return inches;
+}
+
 float microsecondsToInches(float microseconds) {
   // According to Parallax's datasheet for the PING))), there are 73.746
   // microseconds per inch (i.e. sound travels at 1130 feet per second).
