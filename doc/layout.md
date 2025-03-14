@@ -10,8 +10,8 @@
 
 ## Pins
 **Left Side**
-- 0 GPS Rx
-- 1 GPS Tx
+- 0 Rx1 -> GPS Tx
+- 1 Tx1 -> GPS Rx
 - 2 Motor 2
 - 3 UNUSED
 - 4 Motor 0
