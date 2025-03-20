@@ -41,8 +41,8 @@ ratePid_t ratePid;
 gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
-float altitude;
-float obstacleDistance;
+proxReadings_t proxReadings;
+bool sensorFlag = 1;
 
 // All the code that is only run once
 void setup() {
@@ -124,13 +124,10 @@ unsigned long current_time, previous_time;
 void loop() {
   previous_time = current_time;      
   current_time = micros();      
-  float measured_dt = (current_time - previous_time)/1000000.0;
+  //float measured_dt = (current_time - previous_time)/1000000.0;
 
   loopBlink(current_time, 0.5f); // Indicate we are in main loop with a blink every x seconds
 
-//================================================GET PROXIMITY SENSOR DATA===============================================//
-// altitude = measureAlt();
-// obstacleDistance = measureObstacle();
 
 //=============================================GET IMU DATA AND APPLY FILTERS=============================================//
 
@@ -193,6 +190,11 @@ void loop() {
 
   // will only filter the first 4 channels and not switch channels
   rcFiltersApply(&rcFilters, rc_channels);
+
+//================================================GET PROXIMITY SENSOR DATA===============================================//
+
+  getProxMeasurement(&proxReadings, sensorFlag);
+  sensorFlag = !sensorFlag;
 
 //===============================================CREATE SETPOINTS FOR PID CONTROLLER===================================================//
 
@@ -380,9 +382,10 @@ void loop() {
     // printDebug(" MCs \tRL", motor_commands[MOTOR_REAR_LEFT]);
     // printNewLine();
 
-    printDebug("Altitude ", altitude);
-    printDebug(" Obstacle ", obstacleDistance);
-    printDebug(" Spray Switch ", rc_channels[RC_SPRAYER]);
+    printDebug("Prox altitude ", proxReadings.altitude);
+    printDebug(" obstacle ", proxReadings.obstacle);
+    printDebug(" Switches spray ", rc_channels[RC_SPRAYER]);
+    printDebug(" mode ", rc_channels[RC_MODE]);
     printNewLine();
   }
 

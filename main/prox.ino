@@ -13,6 +13,13 @@ void proxInit() {
   delayMicroseconds(20);
 }
 
+void getProxMeasurement(proxReadings_t *prox_readings, bool sensor) {
+  if (sensor == 1) 
+    prox_readings->altitude = measureAlt();
+  else
+    prox_readings->obstacle = measureObstacle();
+}
+
 float measureAlt() {
   float duration, inches;
 
