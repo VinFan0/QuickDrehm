@@ -54,7 +54,7 @@
 #define RC_ARM 4 // if using ELRS this channel should always be your arming channel
 
 // TODO rename to match aux channels function if desired
-#define RC_MODE 5 // Mode Switch (manual vs autonomous) SWB
+#define RC_MODE 5 // Mode Switch (manual vs autonomous) SWD
 #define RC_SPRAYER 6 // Trigger Sprayer SWC
 #define RC_AUX3 7 // rename if you want channels to have mode names
 #define RC_AUX4 8 // rename if you want channels to have mode names
@@ -134,7 +134,7 @@ float gyro_bias[AXIS_COUNT] = {
 //                                                     DEFINED STRUCTS                                                    //
 //========================================================================================================================//
 
-//=====================================================PROX STRUCTS=======================================================//
+//=====================================================PROX and GPS STRUCTS=======================================================//
 
 // Used for recording altitude and obstacle sensor measurements
 typedef struct proxReadings_s {
@@ -142,8 +142,12 @@ typedef struct proxReadings_s {
   float obstacle;
 } proxReadings_t;
 
+typedef struct gpsReadings_s {
+  float latitude;
+  float longitude;
+} gpsReadings_t;
 
-//===================================================SCALER STRUCTS=======================================================//
+//================================= ==================SCALER STRUCTS=======================================================//
 
 // Used in helper.ino to scale ranges between an input range and an output range
 typedef struct rangeScaler_s {

@@ -202,7 +202,7 @@ void loop() {
   float setpoints_rpy[AXIS_COUNT]; // these are the desired attitudes or rotation
 
   // TODO add extra modes for fixedwing flight modes with different setpoints
-  if (rc_channels[RC_MODE] > 0.55) { // lets call aux1 attitude mode for now, you should rename it later
+  if (rc_channels[RC_MODE] < 0.55) { // RC_MODE HIGH will be angle mode
     // These setpoints are in deg, in other words what attitude you want to be at, except for yaw which is in deg/s
     // keep the max attitude below about 60
 
@@ -213,17 +213,15 @@ void loop() {
     float max_rotation = 300.0f;
     // yaw is set to negative rc_channels positive gyro yaw is to the left we want stick movements to the right to be positive
     setpoints_rpy[AXIS_YAW] = -rcCurve(rc_channels[RC_YAW], 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
-  } else { // acro mode
-    // These setpoints are in deg/sec, in otherwords how fast you want to rotate
-    // be careful setting the max setpoint above 60 deg for yaw on fixed wings as they have trouble yawing that fast
-    // with thrust vectoring fixed wing setpoint above 80 deg for yaw is possible
-    // be careful setting the max setpoint above 300 for pitch and roll on fixed wing as they have trouble rotating that fast
+  } else { // AUTO mode
+    // These setpoints are in deg, in other words what attitude you want to be at, except for yaw which is in deg/s
+    // keep the max attitude below about 60
+
+    float max_attitude = 45.0f;
+    setpoints_rpy[AXIS_ROLL] = rcCurve(rc_channels[RC_ROLL], 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    setpoints_rpy[AXIS_PITCH] = rcCurve(rc_channels[RC_PITCH], 0.5f, max_attitude); // scaled value, expo, max attitude deg
 
     float max_rotation = 300.0f;
-
-    setpoints_rpy[AXIS_ROLL] = rcCurve(rc_channels[RC_ROLL], 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
-    setpoints_rpy[AXIS_PITCH] = rcCurve(rc_channels[RC_PITCH], 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
-
     // yaw is set to negative rc_channels positive gyro yaw is to the left we want stick movements to the right to be positive
     setpoints_rpy[AXIS_YAW] = -rcCurve(rc_channels[RC_YAW], 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
   }
@@ -234,16 +232,15 @@ void loop() {
   if (failsafe) { // Set rc_channels/acro to values you want after failsafe
     // You may want to set rc_channels to allow for a plane to do slow turns in attitude mode.
     rc_channels[RC_THROTTLE] = 0.0f; // Unless you really know what you are doing set throttle to 0
-    // rc_channels[RC_ARM] = 0.0f; // no need to disarm unless you don't to recover from failsafe already armed
+    // rc_channels[RC_ARM] = 0.0f; // no need to disarm unless you don't want to recover from failsafe already armed
 
-    // put your fixed wing into attitude mode and slowly turn it to the right while failsafed
-    // really only works for fixed wing aircraft
-    rc_channels[RC_MODE] = 1.0f; // set the aircraft to attitude mode
-    setpoints_rpy[AXIS_ROLL] = 25.0; // tilt right slightly to help turn
-    setpoints_rpy[AXIS_PITCH] = 5.0; // pitch down to help keep some airspeed and prevent stalling
+    // put your drone into attitude mode and give no setpoints while failsafed
+    rc_channels[RC_MODE] = 0.0f; // set the aircraft to attitude mode
+    setpoints_rpy[AXIS_ROLL] = 0.0; // cancel ROLL commands
+    setpoints_rpy[AXIS_PITCH] = 0.0; // cancel PITCH commands
 
-    // yaw is set to negative rc_channels positive gyro yaw is to the left we want to turn right
-    setpoints_rpy[AXIS_YAW] = -25.0; // coordinate the turn
+    // cancel YAW commands
+    setpoints_rpy[AXIS_YAW] = 0.0; // coordinate the turn
   };
 
 //=========================================================PID CONTROLLERS=========================================================//
@@ -299,7 +296,16 @@ void loop() {
       gyro_filtered, // filtered gyro data
       pidSums // pidSums gets updated, will be used in the mixer later 
     );
-  } else { // acro mode
+  } else { // AUTO mode
+    // will modify setpoints_rpy to be used as the setpoint input to ratePidApply
+    attitudePidApply(
+      &attitudePid,
+      setpoints_rpy, // the attitude you to roll/pitch the craft to
+      gravity_vector, // used to find how far off the desired attitude we are
+      setpoints_rpy // output of the attitude pid controller, will modify your setpoint roll pitch and yaw
+    );
+
+    // uses the setpoint modified by attitudePidApply as the input setpoint
     ratePidApply(
       &ratePid, 
       setpoints_rpy, // how fast you want to rotate
@@ -370,22 +376,15 @@ void loop() {
   // PUT DEBUG HERE
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
-    // printDebug("attitude roll", attitude_euler[AXIS_ROLL]);
-    // printDebug(", pitch", attitude_euler[AXIS_PITCH]);
-    // printDebug(", yaw", attitude_euler[AXIS_YAW]);
-    // printNewLine();
 
-    // printDebug("ARM ", armed);
-    // printDebug(" MCs \tFL", motor_commands[MOTOR_FRONT_LEFT]);
-    // printDebug(" MCs \tFR", motor_commands[MOTOR_FRONT_RIGHT]);
-    // printDebug(" MCs \tRR", motor_commands[MOTOR_REAR_RIGHT]);
-    // printDebug(" MCs \tRL", motor_commands[MOTOR_REAR_LEFT]);
-    // printNewLine();
+    printDebug("Mode", rc_channels[RC_MODE]);
+    printDebug(" setpoints ROLL", setpoints_rpy[AXIS_ROLL]);
+    printDebug(" PITCH", setpoints_rpy[AXIS_PITCH]);
+    printDebug(" YAW", setpoints_rpy[AXIS_YAW]);
 
-    printDebug("Prox altitude ", proxReadings.altitude);
-    printDebug(" obstacle ", proxReadings.obstacle);
-    printDebug(" Switches spray ", rc_channels[RC_SPRAYER]);
-    printDebug(" mode ", rc_channels[RC_MODE]);
+    // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
+    // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
+    // printDebug(" YAW ", attitude_euler[AXIS_YAW]);
     printNewLine();
   }
 
@@ -405,7 +404,7 @@ void loop() {
    * vehicle configuration. rc_channels can also be used for inputs mixer or switch logic.
    */
 void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], float servo_commands[]) {
-
+ 
   float throttle = rc_channels[RC_THROTTLE];
 
   // Positive roll = roll right
