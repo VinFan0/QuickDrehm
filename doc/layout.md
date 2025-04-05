@@ -37,3 +37,7 @@
 - 22 Motor 3
 - 23 Motor 4
 
+
+  **Bottom**
+  - 24 Compass I2C SCL2
+  - 24 Compass I2C SDA2
