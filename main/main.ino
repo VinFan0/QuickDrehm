@@ -377,15 +377,15 @@ void loop() {
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
 
-    printDebug("Mode", rc_channels[RC_MODE]);
-    printDebug(" setpoints ROLL", setpoints_rpy[AXIS_ROLL]);
-    printDebug(" PITCH", setpoints_rpy[AXIS_PITCH]);
-    printDebug(" YAW", setpoints_rpy[AXIS_YAW]);
+    // printDebug("Mode", rc_channels[RC_MODE]);
+    // printDebug(" setpoints ROLL", setpoints_rpy[AXIS_ROLL]);
+    // printDebug(" PITCH", setpoints_rpy[AXIS_PITCH]);
+    // printDebug(" YAW", setpoints_rpy[AXIS_YAW]);
 
     // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
     // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
     // printDebug(" YAW ", attitude_euler[AXIS_YAW]);
-    printNewLine();
+    // printNewLine();
   }
 
   // Regulate loop rate
@@ -415,6 +415,11 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   float roll_command = pidSums[AXIS_ROLL];
   float yaw_command = pidSums[AXIS_YAW];
 
+  static uint64_t triggerStartTime;
+  static uint64_t currentTime;
+  static bool sprayerTriggered;
+  static bool sprayerFinished;
+
   // TODO mix inputs to motor commands
   // motor commands should be between 0 and 1
 
@@ -426,7 +431,23 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   // TODO mix inputs to servo commands
   // servos need to be scaled to work properly with the servo scaling that was set earlier
   if(rc_channels[RC_SPRAYER] == 1.0f) {
-    servo_commands[SERVO_SPRAYER] = 45.0f; // constrain(input, low, high)
+    // servo_commands[SERVO_SPRAYER] = 45.0f; // constrain(input, low, high)
+
+    if (!sprayerTriggered) {
+      sprayerTriggered = 1;
+      sprayerFinished = 0;
+      triggerStartTime = millis();
+    } else if (!sprayerFinished) {
+      currentTime = millis();
+      servo_commands[SERVO_SPRAYER] = 45.0f; // constrain(input, low, high)
+      if (currentTime - triggerStartTime >= SPRAY_TIME_MS) {
+        sprayerFinished = 1;
+        servo_commands[SERVO_SPRAYER]  = -45.0f;
+      }
+    } else {
+      servo_commands[SERVO_SPRAYER]  = -45.0f;
+    }
+
     // servo_commands[SERVO_LEFT_REAR_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
     // servo_commands[SERVO_RIGHT_FRONT_AILERON] = -90.0f + constrain(yaw_command * 90.0f, 0.0f, 45.0f); // constrain(input, low, high)
     // servo_commands[SERVO_LEFT_FRONT_AILERON] = -90.0f + constrain(yaw_command * -90.0f, 0.0f, 45.0f); // constrain(input, low, high)
@@ -437,7 +458,8 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     // servo_commands[SERVO_8] = 0.0f;
   }
   else {
-    servo_commands[SERVO_SPRAYER]  = -45.0f;
+    servo_commands[SERVO_SPRAYER] = -45.0f;
+    sprayerTriggered = 0;
     // servo_commands[SERVO_LEFT_REAR_AILERON]   = 0.0f;
     // servo_commands[SERVO_RIGHT_FRONT_AILERON] = 0.0f;
     // servo_commands[SERVO_LEFT_FRONT_AILERON]  = 0.0f;
@@ -447,7 +469,6 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     // servo_commands[SERVO_7] = 0.0f;
     // servo_commands[SERVO_8] = 0.0f;
   }
-  
 }
 
 // DESCRIPTION: Arming occurs when arm switch is switched from low to high twice in the span of a second.
