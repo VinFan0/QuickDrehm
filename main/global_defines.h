@@ -48,14 +48,14 @@
 #define USE_SBUS_RX // if using ELRS set SBUS Failsafe to send failsafe packets otherwise there will be failsafe problems
 // #define USE_DSM_RX
 
-// TODO ensure that these match the channels they go to, this is setup for standard opentx/edgetx channel order AETR
+// DONE ensure that these match the channels they go to, this is setup for standard opentx/edgetx channel order AETR
 #define RC_ROLL 0 // can also be called RC_AILERON if desired
 #define RC_PITCH 1 // can also be called RC_ELEVATOR if desired
 #define RC_THROTTLE 2
 #define RC_YAW 3 // can also be called RC_RUDDER if desired
 #define RC_ARM 4 // if using ELRS this channel should always be your arming channel
 
-// TODO rename to match aux channels function if desired
+// DONE rename to match aux channels function if desired
 #define RC_MODE 5 // Mode Switch (manual vs autonomous) SWD
 #define RC_SPRAYER 6 // Trigger Sprayer SWC
 #define RC_AUX3 7 // rename if you want channels to have mode names
@@ -74,23 +74,21 @@ typedef enum {
   ROT_270_DEG = 3,
 } axisRotation;
 
-// TODO change this depending on your imu rotation
+// DONE change this depending on your imu rotation
 axisRotation imuRotation[AXIS_COUNT] = {ROT_0_DEG, ROT_0_DEG, ROT_0_DEG}; // roll, pitch, yaw rotation
 
-// TODO Run the function calculateGyroBias() in setup() to find these values.
+// DONE Run the function calculateGyroBias() in setup() to find these values.
 float acc_bias[AXIS_COUNT] = {
-  0.06230f, // x
-  0.00005f, // y
-  -0.02469f, // z
+  0.03879f, // x
+  -0.01031f, // y
+  -0.03744f, // z
 };
 
 float gyro_bias[AXIS_COUNT] = {
-  -0.62986f, // roll
-  -13.36663f, // pitch
-  -3.06599f, // yaw
+  -0.97726f, // roll
+  -13.56136f, // pitch
+  -2.83015f, // yaw
 };
-
-
 
 //======================================================SERVO SETUP=======================================================//
 

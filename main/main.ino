@@ -380,13 +380,13 @@ void loop() {
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
 
-    printDebug("ALT reading ", proxReadings.altitude);
-    printDebug(" in\tOBS reading ", proxReadings.obstacle);
-    Serial.print(" in");
+    // printDebug("ALT reading ", proxReadings.altitude);
+    // printDebug(" in\tOBS reading ", proxReadings.obstacle);
+    // Serial.print(" in");
     
-    // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
-    // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
-    // printDebug(" YAW ", attitude_euler[AXIS_YAW]);
+    printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
+    printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
+    printDebug(" YAW ", attitude_euler[AXIS_YAW]);
     printNewLine();
   }
 
