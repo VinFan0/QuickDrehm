@@ -42,6 +42,7 @@ gyroFilters_t gyroFilters;
 accFilters_t accFilters;
 rcFilters_t rcFilters;
 proxReadings_t proxReadings;
+gpsReadings_t gpsReadings;
 bool sensorFlag = 1;
 
 // All the code that is only run once
@@ -191,10 +192,12 @@ void loop() {
   // will only filter the first 4 channels and not switch channels
   rcFiltersApply(&rcFilters, rc_channels);
 
-//================================================GET PROXIMITY SENSOR DATA===============================================//
+//================================================GET PROXIMITY SENSOR AND GPS DATA===============================================//
 
   getProxMeasurement(&proxReadings, sensorFlag);
   sensorFlag = !sensorFlag;
+
+  getGPSData(&gpsReadings);
 
 //===============================================CREATE SETPOINTS FOR PID CONTROLLER===================================================//
 
@@ -377,15 +380,14 @@ void loop() {
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
 
-    // printDebug("Mode", rc_channels[RC_MODE]);
-    // printDebug(" setpoints ROLL", setpoints_rpy[AXIS_ROLL]);
-    // printDebug(" PITCH", setpoints_rpy[AXIS_PITCH]);
-    // printDebug(" YAW", setpoints_rpy[AXIS_YAW]);
-
+    printDebug("ALT reading ", proxReadings.altitude);
+    printDebug(" in\tOBS reading ", proxReadings.obstacle);
+    Serial.print(" in");
+    
     // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
     // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
     // printDebug(" YAW ", attitude_euler[AXIS_YAW]);
-    // printNewLine();
+    printNewLine();
   }
 
   // Regulate loop rate
