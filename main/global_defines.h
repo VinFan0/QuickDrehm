@@ -35,6 +35,8 @@
 #define ALT_TX_PIN 17
 
 #define SPRAY_TIME_MS 500
+#define PROX_MEASURE_MS 500 // One proximity sensor will update once in this many ms. Because the measurements alternate, 
+                            // it taskes twice this time to update the same sensor
 
 //========================================================================================================================//
 //                                                 HARDWARE SETUP DEFINES                                                 //
