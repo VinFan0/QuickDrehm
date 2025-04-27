@@ -393,17 +393,24 @@ void loop() {
     // printDebug(" YAW ", pidSums[AXIS_YAW]);
     // printNewLine();
 
-    printDebug("Motor commands Front Left ", motor_commands[MOTOR_FRONT_LEFT]);
-    printDebug(" Front Right ", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug(" Rear Left ", motor_commands[MOTOR_REAR_LEFT]);
-    printDebug(" Rear Right ", motor_commands[MOTOR_REAR_RIGHT]);
-    printNewLine();
+    // printDebug("Motor commands Front Left ", motor_commands[MOTOR_FRONT_LEFT]);
+    // printDebug(" Front Right ", motor_commands[MOTOR_FRONT_RIGHT]);
+    // printDebug(" Rear Left ", motor_commands[MOTOR_REAR_LEFT]);
+    // printDebug(" Rear Right ", motor_commands[MOTOR_REAR_RIGHT]);
+    // printNewLine();
     
     // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
     // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
     // printDebug(" YAW ", attitude_euler[AXIS_YAW]);
     // printNewLine();
   }
+
+  // Serial.print("Attitude ROLL: ");
+  // Serial.print(attitude_euler[AXIS_ROLL]);
+  // Serial.print(" PITCH: ");
+  // Serial.print(attitude_euler[AXIS_PITCH]);
+  // Serial.print(" YAW: ");
+  // Serial.println(attitude_euler[AXIS_YAW]);
 
   // Regulate loop rate
   maxLoopRate(LOOPRATE); // Will not exceed LOOPRATE
@@ -431,6 +438,13 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
   float pitch_command = pidSums[AXIS_PITCH];
   float roll_command = pidSums[AXIS_ROLL];
   float yaw_command = pidSums[AXIS_YAW];
+  
+  // Serial.print("Pidsums ROLL: ");
+  // Serial.print(pidSums[AXIS_ROLL]);
+  // Serial.print(" Pitch: ");
+  // Serial.print(pidSums[AXIS_PITCH]);
+  // Serial.print(" YAW: ");
+  // Serial.println(pidSums[AXIS_YAW]);
 
   static uint64_t triggerStartTime;
   static uint64_t currentTime;
