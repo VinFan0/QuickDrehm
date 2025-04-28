@@ -22,7 +22,7 @@ bool shouldPrint(unsigned long current_time, float freq) {
 
 void printDebug(const char name[], float value) {
   Serial.print(name);
-  Serial.print(F(":"));
+  Serial.print(F(": "));
   Serial.print(value);
 }
 

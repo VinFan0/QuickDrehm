@@ -38,6 +38,8 @@
 #define PROX_MEASURE_MS 500 // One proximity sensor will update once in this many ms. Because the measurements alternate, 
                             // it taskes twice this time to update the same sensor
 
+#define altSerial Serial4 // Using UART4 for Altitude proximity sensor
+
 //========================================================================================================================//
 //                                                 HARDWARE SETUP DEFINES                                                 //
 //========================================================================================================================//
@@ -60,7 +62,7 @@
 // DONE rename to match aux channels function if desired
 #define RC_MODE 5 // Mode Switch (manual vs autonomous) SWD
 #define RC_SPRAYER 6 // Trigger Sprayer SWC
-#define RC_AUX3 7 // rename if you want channels to have mode names
+#define RC_THR 7 // rename if you want channels to have mode names
 #define RC_AUX4 8 // rename if you want channels to have mode names
 #define RC_AUX5 9 // rename if you want channels to have mode names
 #define RC_AUX6 10 // rename if you want channels to have mode names

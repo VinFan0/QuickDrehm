@@ -76,6 +76,9 @@ void setup() {
   // Initialize proximity sensor I/O
   proxInit();
 
+  // Initialize GPS
+  gpsInit();
+
   // Initialize all pins
   pinMode(13, OUTPUT); // Pin 13 LED blinker on board, do not modify 
 
@@ -197,15 +200,10 @@ void loop() {
   if ((millis() % PROX_MEASURE_MS) == 0) {
     getProxMeasurement(&proxReadings, sensorFlag);
     sensorFlag = !sensorFlag;
-    // Serial.print("Updating Prox ");
-    // Serial.print(sensorFlag);
-    // Serial.print(" ALT: ");
-    // Serial.print(proxReadings.altitude);
-    // Serial.print(" OBS: ");
-    // Serial.println(proxReadings.obstacle);
+
+    // getGPSData(&gpsReadings);
   }
 
-  // getGPSData(&gpsReadings);
 
 //===============================================CREATE SETPOINTS FOR PID CONTROLLER===================================================//
 
@@ -229,12 +227,12 @@ void loop() {
     // keep the max attitude below about 60
 
     float max_attitude = 45.0f;
-    setpoints_rpy[AXIS_ROLL] = rcCurve(rc_channels[RC_ROLL], 0.5f, max_attitude); // scaled value, expo, max attitude deg
-    setpoints_rpy[AXIS_PITCH] = rcCurve(rc_channels[RC_PITCH], 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    setpoints_rpy[AXIS_ROLL] = rcCurve(0, 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    setpoints_rpy[AXIS_PITCH] = rcCurve(0, 0.5f, max_attitude); // scaled value, expo, max attitude deg
 
     float max_rotation = 300.0f;
     // yaw is set to negative rc_channels positive gyro yaw is to the left we want stick movements to the right to be positive
-    setpoints_rpy[AXIS_YAW] = -rcCurve(rc_channels[RC_YAW], 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
+    setpoints_rpy[AXIS_YAW] = -rcCurve(0, 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
   }
 
 //===============================================MODIFY SETPOINTS DURING FAILSAFE===================================================//
@@ -363,7 +361,7 @@ void loop() {
     }
     // Normally you don't want to mess with servos as they are safe to have moving during disarm.
     // Allowing servos to move can also help verify and debug that things are working as they should.
-  } else if (motor_cut) { // MOTOR CUT Set all motors to 0
+  } else if (motor_cut && rc_channels[RC_MODE] < 0.55f) { // MOTOR CUT Set all motors to 0
     // Set all motors to 0.0
     for (int i = 0; i < MOTOR_COUNT; i++) {
       motor_commands[i] = 0.0f;
@@ -387,17 +385,30 @@ void loop() {
   // PUT DEBUG HERE
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
+    
+    printDebug("MODE", rc_channels[RC_MODE]);
 
-    // printDebug("Pidsums ROLL ", pidSums[AXIS_ROLL]);
+    // printDebug("Alt", proxReadings.altitude);
+    // printNewLine();
+
+    // printDebug(" RC chan ROLL ", rc_channels[RC_ROLL]);
+    // printDebug(" PITCH ", rc_channels[RC_PITCH]);
+    // printDebug(" YAW ", rc_channels[RC_YAW]);
+    // printDebug(" THROTTLE ", rc_channels[RC_THROTTLE]);
+    // printNewLine();
+
+    // printDebug(" Pidsums ROLL ", pidSums[AXIS_ROLL]);
     // printDebug(" PITCH ", pidSums[AXIS_PITCH]);
     // printDebug(" YAW ", pidSums[AXIS_YAW]);
+    // printDebug(" RC Throttle ", rc_channels[RC_THROTTLE]);
     // printNewLine();
 
-    // printDebug("Motor commands Front Left ", motor_commands[MOTOR_FRONT_LEFT]);
-    // printDebug(" Front Right ", motor_commands[MOTOR_FRONT_RIGHT]);
-    // printDebug(" Rear Left ", motor_commands[MOTOR_REAR_LEFT]);
-    // printDebug(" Rear Right ", motor_commands[MOTOR_REAR_RIGHT]);
-    // printNewLine();
+    printDebug(" Motor Front Left", motor_commands[MOTOR_FRONT_LEFT]);
+    printDebug(" Front Right", motor_commands[MOTOR_FRONT_RIGHT]);
+    printDebug(" Rear Left", motor_commands[MOTOR_REAR_LEFT]);
+    printDebug(" Rear Right", motor_commands[MOTOR_REAR_RIGHT]);
+    printDebug(" RC THR", rc_channels[RC_THR]);
+    printNewLine();
     
     // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
     // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
@@ -405,12 +416,33 @@ void loop() {
     // printNewLine();
   }
 
+  // Serial.print("RC ROLL: ");
+  // Serial.print(rc_channels[RC_ROLL]);
+  // Serial.print(" PITCH: ");
+  // Serial.print(rc_channels[RC_PITCH]);
+  // Serial.print(" YAW: ");
+  // Serial.print(rc_channels[RC_YAW]);
+  // Serial.print(" THROTTLE: ");
+  // Serial.println(rc_channels[RC_THROTTLE]);
+
   // Serial.print("Attitude ROLL: ");
   // Serial.print(attitude_euler[AXIS_ROLL]);
   // Serial.print(" PITCH: ");
   // Serial.print(attitude_euler[AXIS_PITCH]);
   // Serial.print(" YAW: ");
   // Serial.println(attitude_euler[AXIS_YAW]);
+
+  // Serial.print("pidSum ROLL ");
+  // Serial.print(pidSums[AXIS_ROLL]);
+  // Serial.print("\tPITCH ");
+  // Serial.print(pidSums[AXIS_PITCH]);
+  // Serial.print("\tYAW ");
+  // Serial.println(pidSums[AXIS_YAW]);
+
+  // Serial.print("Alt: ");
+  // Serial.println(proxReadings.altitude);
+  // Serial.print(" Obs: ");
+  // Serial.println(proxReadings.obstacle);
 
   // Regulate loop rate
   maxLoopRate(LOOPRATE); // Will not exceed LOOPRATE
@@ -429,7 +461,18 @@ void loop() {
    */
 void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], float servo_commands[]) {
  
-  float throttle = rc_channels[RC_THROTTLE];
+  float throttle;
+  if (rc_channels[RC_MODE] < 0.55f) {
+    throttle = rc_channels[RC_THROTTLE];
+  } else {
+    if (rc_channels[RC_THR] > 0.55f) {
+      throttle = 0.60f;
+    } else if (rc_channels[RC_THR] < 0.45f) {
+      throttle = 0.20f;
+    } else {
+      throttle = 0.45f;
+    }
+  }
 
   // Positive roll = roll right
   // Positive pitch = pitch down
