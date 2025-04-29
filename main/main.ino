@@ -466,11 +466,11 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     throttle = rc_channels[RC_THROTTLE];
   } else {
     if (rc_channels[RC_THR] > 0.55f) {
-      throttle = 0.60f;
+      throttle = 0.52f;
     } else if (rc_channels[RC_THR] < 0.45f) {
-      throttle = 0.20f;
+      throttle = 0.47f;
     } else {
-      throttle = 0.45f;
+      throttle = 0.50f;
     }
   }
 
