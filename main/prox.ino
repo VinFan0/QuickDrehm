@@ -37,7 +37,7 @@ float measureAlt() {
     measurement_mm = (highByte << 8) | lowByte;
     measurement_in = measurement_mm * 0.0393701;
   } else {
-    Serial.println("Failed to read");
+    // Serial.println("Failed to read");
   }
   return measurement_in;
   
