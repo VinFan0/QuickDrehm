@@ -197,12 +197,12 @@ void loop() {
 
 //================================================GET PROXIMITY SENSOR AND GPS DATA===============================================//
 
-  if ((millis() % PROX_MEASURE_MS) == 0) {
-    getProxMeasurement(&proxReadings, sensorFlag);
-    sensorFlag = !sensorFlag;
+  // if ((millis() % PROX_MEASURE_MS) == 0) {
+  //   getProxMeasurement(&proxReadings, sensorFlag);
+  //   sensorFlag = !sensorFlag;
 
-    // getGPSData(&gpsReadings);
-  }
+  //   // getGPSData(&gpsReadings);
+  // }
 
 
 //===============================================CREATE SETPOINTS FOR PID CONTROLLER===================================================//
@@ -386,7 +386,7 @@ void loop() {
   bool should_print = shouldPrint(micros(), 10.0f); // Print data at 10hz
   if (should_print) {
     
-    printDebug("MODE", rc_channels[RC_MODE]);
+    // printDebug("MODE", rc_channels[RC_MODE]);
 
     // printDebug("Alt", proxReadings.altitude);
     // printNewLine();
@@ -403,11 +403,12 @@ void loop() {
     // printDebug(" RC Throttle ", rc_channels[RC_THROTTLE]);
     // printNewLine();
 
-    printDebug(" Motor Front Left", motor_commands[MOTOR_FRONT_LEFT]);
-    printDebug(" Front Right", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug(" Rear Left", motor_commands[MOTOR_REAR_LEFT]);
-    printDebug(" Rear Right", motor_commands[MOTOR_REAR_RIGHT]);
-    printDebug(" RC THR", rc_channels[RC_THR]);
+    printDebug("MOTORS\tFront Left", motor_commands[MOTOR_FRONT_LEFT]);
+    printDebug("\tFront Right", motor_commands[MOTOR_FRONT_RIGHT]);
+    printDebug("\tRear Left", motor_commands[MOTOR_REAR_LEFT]);
+    if(motor_commands[MOTOR_REAR_LEFT]>=0.0) Serial.print("\t");
+    printDebug("\tRear Right", motor_commands[MOTOR_REAR_RIGHT]);
+    printDebug("\tRC THR", rc_channels[RC_THR]);
     printNewLine();
     
     // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
@@ -513,7 +514,7 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
       triggerStartTime = millis();
     } else if (!sprayerFinished) {
       currentTime = millis();
-      servo_commands[SERVO_SPRAYER] = 45.0f; // constrain(input, low, high)
+      servo_commands[SERVO_SPRAYER] = 30.0f; // constrain(input, low, high)
       if (currentTime - triggerStartTime >= SPRAY_TIME_MS) {
         sprayerFinished = 1;
         servo_commands[SERVO_SPRAYER]  = -45.0f;
