@@ -227,12 +227,15 @@ void loop() {
     // keep the max attitude below about 60
 
     float max_attitude = 45.0f;
-    setpoints_rpy[AXIS_ROLL] = rcCurve(0, 0.5f, max_attitude); // scaled value, expo, max attitude deg
-    setpoints_rpy[AXIS_PITCH] = rcCurve(0, 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    // setpoints_rpy[AXIS_ROLL] = rcCurve(0, 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    // setpoints_rpy[AXIS_PITCH] = rcCurve(0, 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    setpoints_rpy[AXIS_ROLL] = rcCurve(rc_channels[RC_ROLL], 0.5f, max_attitude); // scaled value, expo, max attitude deg
+    setpoints_rpy[AXIS_PITCH] = rcCurve(rc_channels[RC_PITCH], 0.5f, max_attitude); // scaled value, expo, max attitude deg
 
     float max_rotation = 300.0f;
     // yaw is set to negative rc_channels positive gyro yaw is to the left we want stick movements to the right to be positive
-    setpoints_rpy[AXIS_YAW] = -rcCurve(0, 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
+    // setpoints_rpy[AXIS_YAW] = -rcCurve(0, 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
+    setpoints_rpy[AXIS_YAW] = -rcCurve(rc_channels[RC_YAW], 0.5f, max_rotation); // scaled value, expo, max rotation deg/sec
   }
 
 //===============================================MODIFY SETPOINTS DURING FAILSAFE===================================================//
@@ -467,11 +470,11 @@ void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], 
     throttle = rc_channels[RC_THROTTLE];
   } else {
     if (rc_channels[RC_THR] > 0.55f) {
-      throttle = 0.60f;
+      throttle = 0.52f;
     } else if (rc_channels[RC_THR] < 0.45f) {
-      throttle = 0.20f;
+      throttle = 0.47f;
     } else {
-      throttle = 0.45f;
+      throttle = 0.50f;
     }
   }
 
