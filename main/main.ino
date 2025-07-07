@@ -74,10 +74,10 @@ void setup() {
   initRCFilters(&rcFilters);
 
   // Initialize proximity sensor I/O
-  proxInit();
+  // proxInit();
 
   // Initialize GPS
-  gpsInit();
+  // gpsInit();
 
   // Initialize all pins
   pinMode(13, OUTPUT); // Pin 13 LED blinker on board, do not modify 
@@ -406,13 +406,13 @@ void loop() {
     // printDebug(" RC Throttle ", rc_channels[RC_THROTTLE]);
     // printNewLine();
 
-    printDebug("MOTORS\tFront Left", motor_commands[MOTOR_FRONT_LEFT]);
-    printDebug("\tFront Right", motor_commands[MOTOR_FRONT_RIGHT]);
-    printDebug("\tRear Left", motor_commands[MOTOR_REAR_LEFT]);
-    if(motor_commands[MOTOR_REAR_LEFT]>=0.0) Serial.print("\t");
-    printDebug("\tRear Right", motor_commands[MOTOR_REAR_RIGHT]);
-    printDebug("\tRC THR", rc_channels[RC_THR]);
-    printNewLine();
+    // printDebug("MOTORS\tFront Left", motor_commands[MOTOR_FRONT_LEFT]);
+    // printDebug("\tFront Right", motor_commands[MOTOR_FRONT_RIGHT]);
+    // printDebug("\tRear Left", motor_commands[MOTOR_REAR_LEFT]);
+    // if(motor_commands[MOTOR_REAR_LEFT]>=0.0) Serial.print("\t");
+    // printDebug("\tRear Right", motor_commands[MOTOR_REAR_RIGHT]);
+    // printDebug("\tRC THR", rc_channels[RC_THR]);
+    // printNewLine();
     
     // printDebug(" attitude ROLL ", attitude_euler[AXIS_ROLL]);
     // printDebug(" PITCH ", attitude_euler[AXIS_PITCH]);
@@ -466,17 +466,18 @@ void loop() {
 void controlMixer(float rc_channels[], float pidSums[], float motor_commands[], float servo_commands[]) {
  
   float throttle;
-  if (rc_channels[RC_MODE] < 0.55f) {
-    throttle = rc_channels[RC_THROTTLE];
-  } else {
-    if (rc_channels[RC_THR] > 0.55f) {
-      throttle = 0.52f;
-    } else if (rc_channels[RC_THR] < 0.45f) {
-      throttle = 0.47f;
-    } else {
-      throttle = 0.50f;
-    }
-  }
+  throttle = rc_channels[RC_THROTTLE];
+  // if (rc_channels[RC_MODE] < 0.55f) {
+  //   throttle = rc_channels[RC_THROTTLE];
+  // } else {
+  //   if (rc_channels[RC_THR] > 0.55f) {
+  //     throttle = 0.52f;
+  //   } else if (rc_channels[RC_THR] < 0.45f) {
+  //     throttle = 0.47f;
+  //   } else {
+  //     throttle = 0.50f;
+  //   }
+  // }
 
   // Positive roll = roll right
   // Positive pitch = pitch down
